@@ -35,6 +35,12 @@ public class PageProtectionFilter implements Filter {
 
 	}
 
+	/**
+	 * 首先检查请求是否为静态资源，若是则放行.
+	 * 若不是，检查请求是否需要权限，如果不需要，放行.
+	 * 如果需要，检查session是否存在，如果不存在，拦截请求并返回错误信息.
+	 * 如果存在，检查是否登陆和session中的用户是否有足够的权限访问该URL
+	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
@@ -109,10 +115,7 @@ public class PageProtectionFilter implements Filter {
 		
 		
 		// 检查role是否满足
-		checkRole(roleList, credential);
-
-		
-		return true;
+		return checkRole(roleList, credential);
 	}
 	
 	/**
