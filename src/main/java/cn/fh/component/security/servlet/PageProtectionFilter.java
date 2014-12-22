@@ -19,14 +19,19 @@ import org.slf4j.LoggerFactory;
 
 import cn.fh.component.security.credential.Credential;
 import cn.fh.component.security.utils.CredentialUtils;
+import cn.fh.component.security.utils.ResponseUtils;
 import cn.fh.component.security.utils.StringUtils;
 
+/**
+ * 控制页面访问的过虑器，拦截无对应页面访问权限的请求
+ * @author whf
+ *
+ */
 public class PageProtectionFilter implements Filter {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionFilter.class);
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -52,19 +57,10 @@ public class PageProtectionFilter implements Filter {
 		
 		// 检查role
 		// role不满足
-		if (false == checkRole(url, req.getSession())) {
-			HttpServletResponse resp = (HttpServletResponse) response;
-
-			OutputStream out = resp.getOutputStream();
-
-			resp.setContentType("text/plain");
-			resp.setStatus(403); // 无权访问
-
-			out.write("bad role".getBytes());
-			out.close();
+		if (false == checkRole(url, req)) {
+			ResponseUtils.responseBadRole((HttpServletResponse) response);
 			
 			return;
-
 		}
 		
 		
@@ -86,38 +82,48 @@ public class PageProtectionFilter implements Filter {
 	 * @param session
 	 * @return
 	 */
-	private boolean checkRole(String requestURL, HttpSession session) {
-		//List<String> roleList = PageProtectionFilter.requestRoleListMap.get(requestURL);
+	private boolean checkRole(String requestURL, HttpServletRequest req) {
 		List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
 		
-		// 该请求不需要role
+		// 该请求不需要role, 放行
 		if (null == roleList) {
 			return true;
 		}
 		
+		// 请求需要权限
+		// 检查session是否存在
+		boolean sessionExist = isSessionExisted(req);
+		// session不存在，不允许访问
+		if (false == sessionExist) {
+			return false;
+		}
+
+		// session 存在
 		// 得到Credential
+		HttpSession session = req.getSession();
 		Credential credential = CredentialUtils.getCredential(session);
 		// 未登陆
 		if (null == credential) {
 			return false;
 		}
 		
-		// 处理最后一个字符为 '*' 的情况
-		/*char last = requestURL.charAt(requestURL.length() - 1);
-		if ('*' == last) {
-			int lastSplash = requestURL.lastIndexOf('/');
-			String parentURL = requestURL.substring(0, lastSplash);
-			
-			if (requestURL.startsWith(parentURL)) {
-				if (false == checkRole(roleList, credential) ) {
-					return false;
-				}
-			}
-		}*/
 		
 		// 检查role是否满足
 		checkRole(roleList, credential);
 
+		
+		return true;
+	}
+	
+	/**
+	 * 检查session是否存在
+	 * @param req
+	 * @return
+	 */
+	private boolean isSessionExisted(HttpServletRequest req) {
+		if (null == req.getSession(false)) {
+			return false;
+		}
 		
 		return true;
 	}
