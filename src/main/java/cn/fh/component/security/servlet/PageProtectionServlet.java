@@ -61,7 +61,7 @@ public class PageProtectionServlet implements ServletContextListener {
 						+ ">不存在");
 			}
 
-			// PageProtectionFilter.requestRoleListMap = parseConstrain(root);
+			// 解析xml配置文件
 			PageProtectionServlet.rcm = parseConstrain(root);
 
 		} catch (SAXException e) {
@@ -79,8 +79,13 @@ public class PageProtectionServlet implements ServletContextListener {
 
 	}
 	
+	/**
+	 * 解析xml结点树
+	 * @param root
+	 * @return
+	 */
 	private RequestConstrainManager parseConstrain(Element root) {
-		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		//Map<String, List<String>> map = new HashMap<String, List<String>>();
 		RequestConstrainManager manager = new RequestConstrainManager();
 		
 		if (root.hasChildNodes()) {
@@ -116,14 +121,12 @@ public class PageProtectionServlet implements ServletContextListener {
 						}
 					}
 					
-					// 构造map数据结构
-					map.put(url, roleList);
+					// 将解析出的权限信息保存到RequestConstrainManager中
 					manager.put(url, roleList);
 				}
 			}
 		}
 		
-		//return map;
 		return manager;
 	}
 	
