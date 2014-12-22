@@ -20,13 +20,20 @@ public class RequestConstrainManager {
 
 	/**
 	 * 保存不包含通匹符的URL
+	 * 如: /user/profile, /user/register
 	 */
 	private Map<String, List<String>> roleMap = new HashMap<String, List<String>>();
 	/**
 	 * 保存包含通匹符的URL
+	 * 如: /user/*, /chat/girls/*
 	 */
 	private Map<String, List<String>> wildcardRoleMap = new HashMap<String, List<String>>();
 
+	/**
+	 * 得到URL对应的权限List
+	 * @param url
+	 * @return 如果URL不存在，返回null
+	 */
 	public List<String> get(String url) {
 		// 先进行精确匹配，如果找到对应的roleList则返回
 		List<String> roleList = this.roleMap.get(url);
