@@ -8,7 +8,7 @@
 
 	<name>web-security</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<version>1.0-RELEASE</version>
 
 
 	<properties>
@@ -27,16 +27,7 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>el-impl</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
-			<version>3.0.0</version>
-		</dependency>
+
 
 		
 		
@@ -48,26 +39,7 @@
 			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
 
-		<!-- JSON -->
-		<!-- <dependency> <groupId>javax.json</groupId> <artifactId>javax.json-api</artifactId> 
-			<version>1.0</version> </dependency> -->
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.json</artifactId>
-			<version>1.0.4</version>
-		</dependency>
 
 
 		<!-- SLF4j -->
