@@ -34,6 +34,9 @@ public class PageProtectionServlet implements ServletContextListener {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionServlet.class);
 	public static RequestConstrainManager rcm;
 	
+	/**
+	 * The path of configuration file
+	 */
 	public static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
 	public static final String NODE_ATTR_URL = "url";
 	public static final String NODE_ATTR_ROLE = "role";
@@ -45,7 +48,7 @@ public class PageProtectionServlet implements ServletContextListener {
 	}
 
 	/**
-	 * Load page security configuration
+	 * Load and parse page security configuration
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
@@ -54,16 +57,16 @@ public class PageProtectionServlet implements ServletContextListener {
 		}
 
 		try {
+			// load xml file
 			Document doc = getXmlDocumentObject(event.getServletContext());
 			Element root = doc.getDocumentElement();
 
-			// 检查根标签名是否正确
 			if (false == "page".equals(root.getTagName())) {
 				throw new InvalidXmlFileException("标签<" + root.getTagName()
 						+ ">不存在");
 			}
 
-			// 解析xml配置文件
+			// start analysis
 			PageProtectionServlet.rcm = parseConstrain(root);
 
 		} catch (SAXException e) {
@@ -82,8 +85,8 @@ public class PageProtectionServlet implements ServletContextListener {
 	}
 	
 	/**
-	 * 解析xml结点树
-	 * @param root
+	 * perform parse for xml document
+	 * @param root The root element of this document
 	 * @return
 	 */
 	private RequestConstrainManager parseConstrain(Element root) {
@@ -97,14 +100,15 @@ public class PageProtectionServlet implements ServletContextListener {
 				if (node instanceof Element) {
 					Element tag = (Element) node;
 					
-					// 检查标签名是否正确
+					// check tag name
 					if (false == "request".equals(tag.getTagName())) {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">不存在");
 					}
 					
-					// 检查属性是否存在
+					// check the existence of tag attributes
 					String url = tag.getAttribute(NODE_ATTR_URL);
 					String roles = tag.getAttribute(NODE_ATTR_ROLE);
+					// not enough attributes, throw runtime exception
 					if (url.isEmpty()) {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_URL + "'属性");
 					}
@@ -112,7 +116,7 @@ public class PageProtectionServlet implements ServletContextListener {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_ROLE + "'属性");
 					}
 					
-					// 构造roleList数据结构
+					// construct the List of roles
 					List<String> roleList = new ArrayList<String>();
 					String[] roleArray = roles.split(" ");
 					for (String r : roleArray) {
@@ -123,7 +127,7 @@ public class PageProtectionServlet implements ServletContextListener {
 						}
 					}
 					
-					// 将解析出的权限信息保存到RequestConstrainManager中
+					
 					manager.put(url, roleList);
 				}
 			}

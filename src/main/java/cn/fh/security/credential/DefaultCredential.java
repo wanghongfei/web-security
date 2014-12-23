@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * Default implementation of Credential interface
+ * 
  * @author whf
  *
  */
@@ -13,6 +14,9 @@ public class DefaultCredential implements Credential {
 	protected String username;
 	protected String nickName;
 	protected Integer credites;
+	/**
+	 * The primary key of this member entity
+	 */
 	protected Integer id;
 
 	@Override
@@ -74,17 +78,11 @@ public class DefaultCredential implements Credential {
 		}
 	}
 
-	/**
-	 * 得到该用户所有role
-	 */
 	@Override
 	public final List<String> getRoleList() {
 		return this.roleList;
 	}
 
-	/**
-	 * 判断该用户是否具有指定role
-	 */
 	@Override
 	public final boolean hasRole(String roleName) {
 		return this.roleList.contains(roleName);

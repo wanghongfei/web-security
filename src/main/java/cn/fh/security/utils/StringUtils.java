@@ -13,8 +13,7 @@ private StringUtils() {}
 	}
 	
 	/**
-	 * 截掉URL的最后一段字符串
-	 * <p>eg. 传入 /backstage/manage, 返回 /backstage
+	 * e.g.. from "/backstage/manage" to "/backstage", from "/admin/user/add" to "/admin/user"
 	 * @param url
 	 * @return
 	 */
@@ -24,8 +23,9 @@ private StringUtils() {}
 	}
 	
 	/**
-	 * 得到去掉上下文的URL路径。
-	 * <p> 例如, "/ezoo/home" --> "/home", "/home" --> "/home"
+	 * If the context name is '/', this method does nothing.
+	 * If the context name is something else like '/shop', this method removes this string.
+	 * <p> e.g.. /shop/buy --> /buy
 	 * 
 	 * @param contextPath
 	 * @param uri

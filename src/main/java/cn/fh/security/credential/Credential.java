@@ -2,6 +2,12 @@ package cn.fh.security.credential;
 
 import java.util.List;
 
+/**
+ * Interface for user credential
+ * 
+ * @author whf
+ *
+ */
 public interface Credential {
 	Integer getId();
 	String getUsername();

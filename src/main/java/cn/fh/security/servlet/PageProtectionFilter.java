@@ -23,7 +23,9 @@ import cn.fh.security.utils.ResponseUtils;
 import cn.fh.security.utils.StringUtils;
 
 /**
- * 控制页面访问的过虑器，拦截无对应页面访问权限的请求
+ * A filter that intercepts all requests and determine whether server should 
+ * process this request.
+ * 
  * @author whf
  *
  */
@@ -36,10 +38,8 @@ public class PageProtectionFilter implements Filter {
 	}
 
 	/**
-	 * 首先检查请求是否为静态资源，若是则放行.
-	 * 若不是，检查请求是否需要权限，如果不需要，放行.
-	 * 如果需要，检查session是否存在，如果不存在，拦截请求并返回错误信息.
-	 * 如果存在，检查是否登陆和session中的用户是否有足够的权限访问该URL
+	 * check every request and determine whether the client has enough roles to 
+	 * let server process its request.
 	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -48,7 +48,7 @@ public class PageProtectionFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		String url = null;
 		
-		// 从URI中去掉上下文名
+		// remove context name from URI
 		url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
 
 		
@@ -56,14 +56,14 @@ public class PageProtectionFilter implements Filter {
 			logger.debug("请求url:" + url);
 		}
 		
-		// 请求的是资源文件，无需处理
+		// the request is for static resource, just let it go.
 		if (url.startsWith("/resources")) {
 			chain.doFilter(request, response);
 		}
 		
-		// 检查role
-		// role不满足
+		// check whether the client has enough roles
 		if (false == checkRole(url, req)) {
+			// response error information to client
 			ResponseUtils.responseBadRole((HttpServletResponse) response);
 			
 			return;
@@ -83,43 +83,43 @@ public class PageProtectionFilter implements Filter {
 	}
 	
 	/**
-	 * 判断是否允许用户访问该页面
+	 * check whether the client has enough roles.
+	 * if client does not have session and this URL needs roles, return false
+	 * 
 	 * @param requestURL
-	 * @param session
+	 * @param req
 	 * @return
 	 */
 	private boolean checkRole(String requestURL, HttpServletRequest req) {
 		List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
 		
-		// 该请求不需要role, 放行
+		// this request does not need roles, return true
 		if (null == roleList) {
 			return true;
 		}
 		
-		// 请求需要权限
-		// 检查session是否存在
+		// check the existence of session
 		boolean sessionExist = isSessionExisted(req);
-		// session不存在，不允许访问
+		// no session exists, return false
 		if (false == sessionExist) {
 			return false;
 		}
 
-		// session 存在
-		// 得到Credential
+		// session exists
+		// check whether client is logged in
 		HttpSession session = req.getSession();
 		Credential credential = CredentialUtils.getCredential(session);
-		// 未登陆
+		// client has not logged in, return false
 		if (null == credential) {
 			return false;
 		}
 		
 		
-		// 检查role是否满足
 		return checkRole(roleList, credential);
 	}
 	
 	/**
-	 * 检查session是否存在
+	 * check the existence of session
 	 * @param req
 	 * @return
 	 */
@@ -132,7 +132,7 @@ public class PageProtectionFilter implements Filter {
 	}
 	
 	/**
-	 * 检查当前已经登陆用户的role是否满足条件
+	 * check whether the client has permission to let server process its request.
 	 * @param roleList
 	 * @param credential
 	 * @return
@@ -140,14 +140,6 @@ public class PageProtectionFilter implements Filter {
 	private boolean checkRole(List<String> roleList, Credential credential) {
 		return roleList.stream()
 			.anyMatch( (roleName) -> credential.hasRole(roleName) );
-
-/*		for (String role : roleList) {
-			if (false == credential.hasRole(role)) {
-				return false;
-			}
-		}
-		
-		return true;*/
 	}
 
 }

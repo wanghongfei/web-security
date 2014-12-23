@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import cn.fh.security.utils.StringUtils;
 
 /**
- * 保存,管理<url, roleList>映射
+ * This class contains 2 maps from url to role where url is the request 
+ * made by client and the role is the Role needed in order to process 
+ * this request.
+ * 
  * @author whf
  *
  */
@@ -19,30 +22,29 @@ public class RequestConstrainManager {
 			.getLogger(RequestConstrainManager.class);
 
 	/**
-	 * 保存不包含通匹符的URL
-	 * 如: /user/profile, /user/register
+	 * A map used to store normal URL.
+	 * e.g.: /user/profile, /user/register
 	 */
 	private Map<String, List<String>> roleMap = new HashMap<String, List<String>>();
 	/**
-	 * 保存包含通匹符的URL
-	 * 如: /user/*, /chat/girls/*
+	 * A map used to store URL including wildcard.
+	 * e.g.: /user/*, /chat/girls/*
 	 */
 	private Map<String, List<String>> wildcardRoleMap = new HashMap<String, List<String>>();
 
 	/**
-	 * 得到URL对应的权限List
+	 * Get the roles needed for this url
 	 * @param url
-	 * @return 如果URL不存在，返回null
+	 * @return Return null if url does not exist in this manager
 	 */
 	public List<String> get(String url) {
-		// 先进行精确匹配，如果找到对应的roleList则返回
+		// first of all, perform accurate match
 		List<String> roleList = this.roleMap.get(url);
 		if (null != roleList) {
 			return roleList;
 		}
 
-		// 如果精确匹配失败，则进行'*'匹配
-		// 即确定请求的URL是否符合/home/*的形式
+		// if no List found, perform wildcard match
 		String wildcardUrl = StringUtils.trimLastUrlToken(url) + "/*";
 		roleList = this.wildcardRoleMap.get(wildcardUrl);
 
@@ -50,21 +52,18 @@ public class RequestConstrainManager {
 	}
 
 	/**
-	 * 添加URL和其对应的roleList
-	 * 
-	 * @param url
-	 *            带通配符的URL或不带通配符的URL均可
+	 * Put a url-role map into this manager.
+	 * @param url A String representing the URL
 	 * @param roleList
 	 */
 	public void put(String url, List<String> roleList) {
 		char lastChar = url.charAt(url.length() - 1);
 
-		// 分类存放
-		// 最后一个字符为 * 的放到 wildcardRoleMap中
+		// if there's `*` in this url, put this url into wildcardRoleMap
 		if ('*' == lastChar) {
 			this.wildcardRoleMap.put(url, roleList);
 		} else {
-			// 普通URL放到 roleMap中
+			// if not, put this url into roleMap
 			this.roleMap.put(url, roleList);
 		}
 	}

@@ -10,7 +10,7 @@ public class ResponseUtils {
 	}
 	
 	/**
-	 * 返回权限不足错误信息，关闭输出流
+	 * Return error information and close OutputStream
 	 * @param resp
 	 * @throws IOException
 	 */

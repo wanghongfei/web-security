@@ -10,9 +10,9 @@ import cn.fh.security.credential.Credential;
 public class CredentialUtils {
 	
 	/**
-	 * 从指定session中得到Credential
-	 * @param session 当前session
-	 * @return 如果用户未登陆,返回null
+	 * Get credential from session
+	 * @param session
+	 * @return null if nothing has found
 	 */
 	public static Credential getCredential(HttpSession session) {
 		Credential credential = (Credential) session.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
@@ -21,9 +21,9 @@ public class CredentialUtils {
 	}
 	
 	/**
-	 * 将用户Credential放入当前session中去.
-	 * <p> 如果当前session中存在一个Credential，则扔RuntimeException
-	 * @param session 当前session
+	 * Put credential into session
+	 * 
+	 * @param session
 	 * @param credential
 	 * @return
 	 */
@@ -36,7 +36,8 @@ public class CredentialUtils {
 	}
 	
 	/**
-	 * 得到SHA-1 hash码
+	 * Get cryptograph of the password using SHA-1 algorithm.
+	 * 
 	 * @param psd
 	 * @return
 	 */
