@@ -1,4 +1,4 @@
-package cn.fh.component.security.servlet;
+package cn.fh.security.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,10 +17,10 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.fh.component.security.credential.Credential;
-import cn.fh.component.security.utils.CredentialUtils;
-import cn.fh.component.security.utils.ResponseUtils;
-import cn.fh.component.security.utils.StringUtils;
+import cn.fh.security.credential.Credential;
+import cn.fh.security.utils.CredentialUtils;
+import cn.fh.security.utils.ResponseUtils;
+import cn.fh.security.utils.StringUtils;
 
 /**
  * 控制页面访问的过虑器，拦截无对应页面访问权限的请求

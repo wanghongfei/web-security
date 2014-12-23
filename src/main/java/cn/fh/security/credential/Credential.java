@@ -1,4 +1,4 @@
-package cn.fh.component.security.credential;
+package cn.fh.security.credential;
 
 import java.util.List;
 

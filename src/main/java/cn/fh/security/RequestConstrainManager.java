@@ -1,4 +1,4 @@
-package cn.fh.component.security;
+package cn.fh.security;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.fh.component.security.utils.StringUtils;
+import cn.fh.security.utils.StringUtils;
 
 /**
  * 保存,管理<url, roleList>映射

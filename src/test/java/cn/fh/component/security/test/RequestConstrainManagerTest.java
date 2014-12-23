@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.fh.component.security.RequestConstrainManager;
+import cn.fh.security.RequestConstrainManager;
 
 public class RequestConstrainManagerTest {
 	RequestConstrainManager rcm;

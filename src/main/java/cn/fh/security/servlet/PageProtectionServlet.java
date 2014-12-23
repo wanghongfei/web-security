@@ -1,4 +1,4 @@
-package cn.fh.component.security.servlet;
+package cn.fh.security.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import cn.fh.component.security.RequestConstrainManager;
-import cn.fh.component.security.exception.InvalidXmlFileException;
+import cn.fh.security.RequestConstrainManager;
+import cn.fh.security.exception.InvalidXmlFileException;
 
 /**
  * Load page security configuration at startup.

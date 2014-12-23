@@ -1,11 +1,11 @@
-package cn.fh.component.security.utils;
+package cn.fh.security.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.http.HttpSession;
 
-import cn.fh.component.security.credential.Credential;
+import cn.fh.security.credential.Credential;
 
 public class CredentialUtils {
 	

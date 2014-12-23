@@ -1,4 +1,4 @@
-package cn.fh.component.security.utils;
+package cn.fh.security.utils;
 
 public class StringUtils {
 private StringUtils() {}

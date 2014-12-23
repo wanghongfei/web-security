@@ -1,4 +1,4 @@
-package cn.fh.component.security.exception;
+package cn.fh.security.exception;
 
 public class InvalidXmlFileException extends RuntimeException {
 	public InvalidXmlFileException(String msg) {
