@@ -19,7 +19,7 @@ public interface Credential {
 	void addRoles(String[] roleNames);
 	
 	/**
-	 * 实现类的对象在ServletContext中的key名
+	 * 实现类的对象在session中的key名
 	 */
 	String CREDENTIAL_CONTEXT_ATTRIBUTE = "CURRENT_USER_CREDENTIAL";
 }
