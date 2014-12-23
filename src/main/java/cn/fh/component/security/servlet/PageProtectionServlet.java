@@ -35,6 +35,8 @@ public class PageProtectionServlet implements ServletContextListener {
 	public static RequestConstrainManager rcm;
 	
 	public static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
+	public static final String NODE_ATTR_URL = "url";
+	public static final String NODE_ATTR_ROLE = "role";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -101,13 +103,13 @@ public class PageProtectionServlet implements ServletContextListener {
 					}
 					
 					// 检查属性是否存在
-					String url = tag.getAttribute("url");
-					String roles = tag.getAttribute("role");
+					String url = tag.getAttribute(NODE_ATTR_URL);
+					String roles = tag.getAttribute(NODE_ATTR_ROLE);
 					if (url.isEmpty()) {
-						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'url'属性");
+						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_URL + "'属性");
 					}
 					if (roles.isEmpty()) {
-						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'role'属性");
+						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_ROLE + "'属性");
 					}
 					
 					// 构造roleList数据结构
