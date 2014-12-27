@@ -3,9 +3,8 @@ package cn.fh.security.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -22,6 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import cn.fh.security.RequestConstrainManager;
+import cn.fh.security.RoleInfo;
 import cn.fh.security.exception.InvalidXmlFileException;
 
 /**
@@ -40,6 +40,7 @@ public class PageProtectionServlet implements ServletContextListener {
 	public static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
 	public static final String NODE_ATTR_URL = "url";
 	public static final String NODE_ATTR_ROLE = "role";
+	public static final String NODE_ATTR_TO_URL = "to-url";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -108,6 +109,8 @@ public class PageProtectionServlet implements ServletContextListener {
 					// check the existence of tag attributes
 					String url = tag.getAttribute(NODE_ATTR_URL);
 					String roles = tag.getAttribute(NODE_ATTR_ROLE);
+					// to-url is optional
+					String toUrl = tag.getAttribute(NODE_ATTR_TO_URL);
 					// not enough attributes, throw runtime exception
 					if (url.isEmpty()) {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_URL + "'属性");
@@ -116,19 +119,26 @@ public class PageProtectionServlet implements ServletContextListener {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">缺少'" + NODE_ATTR_ROLE + "'属性");
 					}
 					
-					// construct the List of roles
-					List<String> roleList = new ArrayList<String>();
+					//List<String> roleList = new ArrayList<String>();
 					String[] roleArray = roles.split(" ");
-					for (String r : roleArray) {
+					
+					if (logger.isDebugEnabled()) {
+						// traverse and print all roles
+						Arrays.stream(roleArray).forEach( (roleName) -> {
+							logger.debug("找到role限制:<" + url + "> : " + roleName);
+						});
+					}
+					
+/*					for (String r : roleArray) {
 						roleList.add(r);
 						
 						if (logger.isDebugEnabled()) {
 							logger.debug("找到role限制:<" + url + "> : " + r);
 						}
-					}
+					}*/
 					
 					
-					manager.put(url, roleList);
+					manager.put(url, new RoleInfo(toUrl, roleArray));
 				}
 			}
 		}

@@ -7,6 +7,7 @@
     				<xs:complexType>
     					<xs:attribute name="url" type="xs:string" use="required"/>
     					<xs:attribute name="role" type="xs:string" use="required"/>
+    					<xs:attribute name="to-url" type="xs:string" use="optional"/>
     				</xs:complexType>
     			</xs:element>
     		</xs:sequence>

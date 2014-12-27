@@ -25,30 +25,32 @@ public class RequestConstrainManager {
 	 * A map used to store normal URL.
 	 * e.g.: /user/profile, /user/register
 	 */
-	private Map<String, List<String>> roleMap = new HashMap<String, List<String>>();
+	//private Map<String, List<String>> roleMap = new HashMap<String, List<String>>();
+	private Map<String, RoleInfo> roleMap = new HashMap<String, RoleInfo>();
 	/**
 	 * A map used to store URL including wildcard.
 	 * e.g.: /user/*, /chat/girls/*
 	 */
-	private Map<String, List<String>> wildcardRoleMap = new HashMap<String, List<String>>();
+	//private Map<String, List<String>> wildcardRoleMap = new HashMap<String, List<String>>();
+	private Map<String, RoleInfo> wildcardRoleMap = new HashMap<String, RoleInfo>();
 
 	/**
 	 * Get the roles needed for this url
 	 * @param url
 	 * @return Return null if url does not exist in this manager
 	 */
-	public List<String> get(String url) {
+	public RoleInfo get(String url) {
 		// first of all, perform accurate match
-		List<String> roleList = this.roleMap.get(url);
-		if (null != roleList) {
-			return roleList;
+		RoleInfo info = this.roleMap.get(url);
+		if (null != info) {
+			return info;
 		}
 
 		// if no List found, perform wildcard match
 		String wildcardUrl = StringUtils.trimLastUrlToken(url) + "/*";
-		roleList = this.wildcardRoleMap.get(wildcardUrl);
+		info = this.wildcardRoleMap.get(wildcardUrl);
 
-		return roleList;
+		return info;
 	}
 
 	/**
@@ -56,15 +58,16 @@ public class RequestConstrainManager {
 	 * @param url A String representing the URL
 	 * @param roleList
 	 */
-	public void put(String url, List<String> roleList) {
+	//public void put(String url, List<String> roleList) {
+	public void put(String url, RoleInfo roleInfo) {
 		char lastChar = url.charAt(url.length() - 1);
 
 		// if there's `*` in this url, put this url into wildcardRoleMap
 		if ('*' == lastChar) {
-			this.wildcardRoleMap.put(url, roleList);
+			this.wildcardRoleMap.put(url, roleInfo);
 		} else {
 			// if not, put this url into roleMap
-			this.roleMap.put(url, roleList);
+			this.roleMap.put(url, roleInfo);
 		}
 	}
 }

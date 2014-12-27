@@ -1,7 +1,6 @@
 package cn.fh.security.servlet;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.fh.security.RoleInfo;
 import cn.fh.security.credential.Credential;
 import cn.fh.security.utils.CredentialUtils;
 import cn.fh.security.utils.ResponseUtils;
@@ -91,7 +91,9 @@ public class PageProtectionFilter implements Filter {
 	 * @return
 	 */
 	private boolean checkRole(String requestURL, HttpServletRequest req) {
-		List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
+		//List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
+		RoleInfo rInfo = PageProtectionServlet.rcm.get(requestURL);
+		List<String> roleList = rInfo.getRoleList();
 		
 		// this request does not need roles, return true
 		if (null == roleList) {
