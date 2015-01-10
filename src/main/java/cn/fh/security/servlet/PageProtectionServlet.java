@@ -54,7 +54,10 @@ public class PageProtectionServlet implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		STATIC_RESOURCE_PATH = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
+		String resourcePath = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
+		if (null != resourcePath) {
+			STATIC_RESOURCE_PATH = resourcePath;
+		}
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("使用静态资源目录:" + STATIC_RESOURCE_PATH);
