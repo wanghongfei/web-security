@@ -2,9 +2,7 @@ package cn.fh.security.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -37,10 +35,13 @@ public class PageProtectionServlet implements ServletContextListener {
 	/**
 	 * The path of configuration file
 	 */
-	public static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
-	public static final String NODE_ATTR_URL = "url";
-	public static final String NODE_ATTR_ROLE = "role";
-	public static final String NODE_ATTR_TO_URL = "to-url";
+	private static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
+	private static final String NODE_ATTR_URL = "url";
+	private static final String NODE_ATTR_ROLE = "role";
+	private static final String NODE_ATTR_TO_URL = "to-url";
+	private static final String CONFIG_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
+	
+	public static String STATIC_RESOURCE_PATH = "/resources";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -53,6 +54,12 @@ public class PageProtectionServlet implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
+		STATIC_RESOURCE_PATH = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("使用静态资源目录:" + STATIC_RESOURCE_PATH);
+		}
+
 		if (logger.isDebugEnabled()) {
 			logger.debug("载入页面security配置文件");
 		}

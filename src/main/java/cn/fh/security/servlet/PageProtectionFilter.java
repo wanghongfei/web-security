@@ -57,7 +57,7 @@ public class PageProtectionFilter implements Filter {
 		}
 		
 		// the request is for static resource, just let it go.
-		if (url.startsWith("/resources")) {
+		if (url.startsWith(PageProtectionServlet.STATIC_RESOURCE_PATH)) {
 			chain.doFilter(request, response);
 		}
 		
