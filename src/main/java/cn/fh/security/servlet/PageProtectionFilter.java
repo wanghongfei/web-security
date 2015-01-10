@@ -62,9 +62,10 @@ public class PageProtectionFilter implements Filter {
 		}
 		
 		// check whether the client has enough roles
-		if (false == checkRole(url, req)) {
+		RoleInfo rInfo = PageProtectionServlet.rcm.get(url);
+		if (false == checkRole(rInfo, req)) {
 			// response error information to client
-			ResponseUtils.responseBadRole((HttpServletResponse) response);
+			ResponseUtils.responseBadRole((HttpServletResponse) response, rInfo);
 			
 			return;
 		}
@@ -90,9 +91,9 @@ public class PageProtectionFilter implements Filter {
 	 * @param req
 	 * @return
 	 */
-	private boolean checkRole(String requestURL, HttpServletRequest req) {
+	private boolean checkRole(RoleInfo rInfo, HttpServletRequest req) {
 		//List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
-		RoleInfo rInfo = PageProtectionServlet.rcm.get(requestURL);
+		//RoleInfo rInfo = PageProtectionServlet.rcm.get(requestURL);
 		List<String> roleList = rInfo.getRoleList();
 		
 		// this request does not need roles, return true
