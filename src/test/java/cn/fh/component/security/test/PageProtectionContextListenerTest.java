@@ -5,8 +5,6 @@ import static org.mockito.Mockito.when;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,15 +13,11 @@ import org.junit.Test;
 import cn.fh.security.servlet.PageProtectionContextListener;
 
 public class PageProtectionContextListenerTest {
-	private HttpServletRequest req;
-	private HttpServletResponse resp;
 	private ServletContextEvent event;
 	private ServletContext context;
 
 	@Before
 	public void initServletMockito() {
-		this.req = mock(HttpServletRequest.class);
-		this.resp = mock(HttpServletResponse.class);
 		this.event = mock(ServletContextEvent.class);
 		this.context = mock(ServletContext.class);
 		
