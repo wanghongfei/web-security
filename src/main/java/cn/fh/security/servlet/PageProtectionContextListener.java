@@ -28,8 +28,8 @@ import cn.fh.security.exception.InvalidXmlFileException;
  * @author whf
  *
  */
-public class PageProtectionServlet implements ServletContextListener {
-	public static Logger logger = LoggerFactory.getLogger(PageProtectionServlet.class);
+public class PageProtectionContextListener implements ServletContextListener {
+	public static Logger logger = LoggerFactory.getLogger(PageProtectionContextListener.class);
 	public static RequestConstrainManager rcm;
 	
 	/**
@@ -78,7 +78,7 @@ public class PageProtectionServlet implements ServletContextListener {
 			}
 
 			// start analysis
-			PageProtectionServlet.rcm = parseConstrain(root);
+			PageProtectionContextListener.rcm = parseConstrain(root);
 
 		} catch (SAXException e) {
 			e.printStackTrace();
@@ -157,7 +157,7 @@ public class PageProtectionServlet implements ServletContextListener {
 	}
 	
 	private Document getXmlDocumentObject(ServletContext ctx) throws SAXException, IOException, ParserConfigurationException {
-		InputStream in = ctx.getResourceAsStream(PageProtectionServlet.SECURITY_CONFIG_PATH);
+		InputStream in = ctx.getResourceAsStream(PageProtectionContextListener.SECURITY_CONFIG_PATH);
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 	}
 

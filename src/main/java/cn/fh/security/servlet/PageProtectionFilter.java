@@ -57,12 +57,12 @@ public class PageProtectionFilter implements Filter {
 		}
 		
 		// the request is for static resource, just let it go.
-		if (url.startsWith(PageProtectionServlet.STATIC_RESOURCE_PATH)) {
+		if (url.startsWith(PageProtectionContextListener.STATIC_RESOURCE_PATH)) {
 			chain.doFilter(request, response);
 		}
 		
 		// check whether the client has enough roles
-		RoleInfo rInfo = PageProtectionServlet.rcm.get(url);
+		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
 		if (false == checkRole(rInfo, req)) {
 			// response error information to client
 			ResponseUtils.responseBadRole((HttpServletResponse) response, rInfo);
