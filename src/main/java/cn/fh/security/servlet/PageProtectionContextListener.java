@@ -1,15 +1,8 @@
 package cn.fh.security.servlet;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import cn.fh.security.RequestConstrainManager;
+import cn.fh.security.RoleInfo;
+import cn.fh.security.exception.InvalidXmlFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -18,9 +11,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import cn.fh.security.RequestConstrainManager;
-import cn.fh.security.RoleInfo;
-import cn.fh.security.exception.InvalidXmlFileException;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Load page security configuration at startup.
@@ -39,8 +37,12 @@ public class PageProtectionContextListener implements ServletContextListener {
 	private static final String NODE_ATTR_URL = "url";
 	private static final String NODE_ATTR_ROLE = "role";
 	private static final String NODE_ATTR_TO_URL = "to-url";
-	private static final String CONFIG_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
-	
+
+    /**
+     * The context parameter name for static resource path configured in web.xml
+     */
+	private static final String INIT_PARM_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
+
 	public static String STATIC_RESOURCE_PATH = "/resources";
 
 	@Override
@@ -54,7 +56,8 @@ public class PageProtectionContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		String resourcePath = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
+		//String resourcePath = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
+        String resourcePath = event.getServletContext().getInitParameter(INIT_PARM_STATIC_RESOURCE_PATH);
 		if (null != resourcePath) {
 			STATIC_RESOURCE_PATH = resourcePath;
 		}
