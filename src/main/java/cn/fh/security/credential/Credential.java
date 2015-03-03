@@ -4,14 +4,28 @@ import java.util.List;
 
 /**
  * Interface for user credential
- * 
- * @author whf
+ *
+ * @author wanghongfei
  *
  */
 public interface Credential {
+    /**
+     * This integer is the primary key used in underlying database table.
+     * @return The primary key of the underlying entity.
+     */
 	Integer getId();
+
+    /**
+     * String used to login.
+     * @return username of this account.
+     */
 	String getUsername();
 	void setUsername(String name);
+
+    /**
+     * Nick name cannot be used to login.
+     * @return The nick name of this user.
+     */
 	String getNickName();
 	void setNickName(String name);
 	

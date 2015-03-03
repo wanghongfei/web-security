@@ -13,7 +13,7 @@ public class DefaultCredential implements Credential {
 	protected List<String> roleList = new ArrayList<String>();
 	protected String username;
 	protected String nickName;
-	protected Integer credites;
+	protected Integer credits;
 	/**
 	 * The primary key of this member entity
 	 */
@@ -21,14 +21,14 @@ public class DefaultCredential implements Credential {
 
 	@Override
 	public Integer getCredits() {
-		return this.credites;
+		return this.credits;
 	}
 
 	
 	public DefaultCredential(Integer id, String username, String nickName, Integer credits) {
 		this.username = username;
 		this.nickName = nickName;
-		this.credites = credits;
+		this.credits = credits;
 	}
 	
 
@@ -46,7 +46,7 @@ public class DefaultCredential implements Credential {
 
 	@Override
 	public void setCredits(Integer point) {
-		this.credites = point;
+		this.credits = point;
 	}
 
 
