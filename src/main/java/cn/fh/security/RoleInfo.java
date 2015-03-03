@@ -12,9 +12,9 @@ import java.util.List;
 public class RoleInfo {
 	private List<String> roleList;
 	/**
-	 * Jump to this url if validation fails
+	 * Redirect to this url if validation fails
 	 */
-	private String toUrl;
+	private String toUrl = "";
 	
 	public RoleInfo(String toUrl, String... roles) {
 		this.toUrl = toUrl;

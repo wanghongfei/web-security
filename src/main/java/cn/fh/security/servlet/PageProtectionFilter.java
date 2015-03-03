@@ -92,8 +92,10 @@ public class PageProtectionFilter implements Filter {
 	 * @return
 	 */
 	private boolean checkRole(RoleInfo rInfo, HttpServletRequest req) {
-		//List<String> roleList = PageProtectionServlet.rcm.get(requestURL);
-		//RoleInfo rInfo = PageProtectionServlet.rcm.get(requestURL);
+        if (null == rInfo) {
+            return true;
+        }
+
 		List<String> roleList = rInfo.getRoleList();
 		
 		// this request does not need roles, return true

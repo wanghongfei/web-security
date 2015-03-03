@@ -8,7 +8,7 @@
 
 	<name>web-security</name>
 	<packaging>jar</packaging>
-	<version>1.1.RELEASE</version>
+	<version>1.2.SNAPSHOT</version>
 
 
 	<properties>
@@ -68,7 +68,7 @@
 
 	</dependencies>
 	<build>
-		<finalName>web-security-1.1.RELEASE</finalName>
+		<finalName>web-security-1.2.SNAPSHOT</finalName>
 		<plugins>
 
 			<plugin>
