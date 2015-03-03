@@ -1,13 +1,11 @@
 package cn.fh.security;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import cn.fh.security.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.fh.security.utils.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class contains 2 maps from url to role where url is the request 
@@ -56,7 +54,7 @@ public class RequestConstrainManager {
 	/**
 	 * Put a url-role map into this manager.
 	 * @param url A String representing the URL
-	 * @param roleList
+	 * @param roleInfo
 	 */
 	//public void put(String url, List<String> roleList) {
 	public void put(String url, RoleInfo roleInfo) {
