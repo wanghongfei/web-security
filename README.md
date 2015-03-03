@@ -17,10 +17,10 @@
 * `WEB-INF/web.xml`:<br />
 ```
 	<listener>
-		<listener-class>cn.fh.security.servlet.PageProtectionServlet</listener-class>
+		<listener-class>cn.fh.security.servlet.PageProtectionContextListener</listener-class>
 	</listener>
 	<filter>
-		<filter-name>Page Filter</filter-name>
+		<filter-name>Page Protection Filter</filter-name>
 		<filter-class>cn.fh.security.servlet.PageProtectionFilter</filter-class>
 	</filter>
 ```
