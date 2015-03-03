@@ -22,6 +22,11 @@ import java.util.Arrays;
 
 /**
  * Load page security configuration at startup.
+ * <p> You can specify context parameter in {@code web.xml} to redefine the path to your own configuration file:
+ * <p><ul>
+ *     <li>STATIC_RESOURCE_PATH: This directory contains your static resources such as *.js, *.css, *.jpeg files.
+ *     <li>SECURITY_CONFIG_PATH: The path to your own configuration xml file for this framework.
+ * </ul>
  * 
  * @author whf
  *
@@ -30,10 +35,6 @@ public class PageProtectionContextListener implements ServletContextListener {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionContextListener.class);
 	public static RequestConstrainManager rcm;
 	
-	/**
-	 * The path of configuration file
-	 */
-	private static final String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
 	private static final String NODE_ATTR_URL = "url";
 	private static final String NODE_ATTR_ROLE = "role";
 	private static final String NODE_ATTR_TO_URL = "to-url";
@@ -41,9 +42,14 @@ public class PageProtectionContextListener implements ServletContextListener {
     /**
      * The context parameter name for static resource path configured in web.xml
      */
-	private static final String INIT_PARM_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
+	public static final String INIT_PARM_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
+    public static final String INIT_PARM_SECURITY_CONFIG_PATH = "SECURITY_CONFIG_PATH";
 
-	public static String STATIC_RESOURCE_PATH = "/resources";
+    /**
+     * The path of configuration file
+     */
+    public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
+    public static String STATIC_RESOURCE_PATH = "/resources";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -56,19 +62,14 @@ public class PageProtectionContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		//String resourcePath = (String) event.getServletContext().getAttribute(CONFIG_STATIC_RESOURCE_PATH);
-        String resourcePath = event.getServletContext().getInitParameter(INIT_PARM_STATIC_RESOURCE_PATH);
-		if (null != resourcePath) {
-			STATIC_RESOURCE_PATH = resourcePath;
-		}
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("使用静态资源目录:" + STATIC_RESOURCE_PATH);
-		}
+        loadContextParameter(event.getServletContext());
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("载入页面security配置文件");
+			logger.debug("静态资源目录:{}", STATIC_RESOURCE_PATH);
+            logger.debug("security配置文件:{}", SECURITY_CONFIG_PATH);
+            logger.debug("载入页面security配置文件");
 		}
+
 
 		try {
 			// load xml file
@@ -97,6 +98,18 @@ public class PageProtectionContextListener implements ServletContextListener {
 		}
 
 	}
+
+    private void loadContextParameter(ServletContext ctx) {
+        String resourcePath = ctx.getInitParameter(INIT_PARM_STATIC_RESOURCE_PATH);
+        if (null != resourcePath) {
+            STATIC_RESOURCE_PATH = resourcePath;
+        }
+
+        String configPath = ctx.getInitParameter(INIT_PARM_SECURITY_CONFIG_PATH);
+        if (null != configPath) {
+            SECURITY_CONFIG_PATH = configPath;
+        }
+    }
 	
 	/**
 	 * perform parse for xml document
