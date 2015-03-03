@@ -37,6 +37,7 @@ public interface Credential {
 	
 	void addRole(String roleName);
 	void addRoles(String[] roleNames);
+    void addRoles(List<String> roleList);
 	
 	/**
 	 * 实现类的对象在session中的key名

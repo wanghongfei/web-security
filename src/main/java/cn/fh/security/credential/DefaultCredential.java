@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Default implementation of Credential interface
+ * Default implementation of Credential interface. This object represents the identification of
+ * the current user, therefore it should live in the session scope.
  * 
  * @author whf
  *
@@ -77,6 +78,11 @@ public class DefaultCredential implements Credential {
 			this.roleList.add(role);
 		}
 	}
+
+    @Override
+    public final void addRoles(List<String> roleList) {
+        this.roleList.addAll(roleList);
+    }
 
 	@Override
 	public final List<String> getRoleList() {
