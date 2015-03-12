@@ -1,11 +1,10 @@
 package cn.fh.security.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import cn.fh.security.credential.Credential;
 
 import javax.servlet.http.HttpSession;
-
-import cn.fh.security.credential.Credential;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class CredentialUtils {
 	
@@ -42,6 +41,10 @@ public class CredentialUtils {
 	 * @return
 	 */
 	public static String sha(String psd) {
+        if (null == psd) {
+            throw new IllegalArgumentException("password cannot be null!");
+        }
+
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
 			md.update(psd.getBytes());
