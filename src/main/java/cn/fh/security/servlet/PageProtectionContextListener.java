@@ -142,7 +142,7 @@ public class PageProtectionContextListener implements ServletContextListener {
 						if (null == url || url.isEmpty()) {
 							throw new InvalidXmlFileException("标签<" + tagName + ">缺少'" + LOGIN_URL + "'属性");
 						}
-						this.rcm.setLoginUrl(url);
+						manager.setLoginUrl(url);
 
 						if (logger.isDebugEnabled()) {
 							logger.debug("登陆页面url:{}", url);
