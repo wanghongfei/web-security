@@ -20,6 +20,11 @@ public class RequestConstrainManager {
 			.getLogger(RequestConstrainManager.class);
 
 	/**
+	 * 登陆页面的URI
+	 */
+	private String loginUrl;
+
+	/**
 	 * A map used to store normal URL.
 	 * e.g.: /user/profile, /user/register
 	 */
@@ -67,5 +72,13 @@ public class RequestConstrainManager {
 			// if not, put this url into roleMap
 			this.roleMap.put(url, roleInfo);
 		}
+	}
+
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
 	}
 }

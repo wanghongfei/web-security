@@ -39,6 +39,8 @@ public class PageProtectionContextListener implements ServletContextListener {
 	private static final String NODE_ATTR_ROLE = "role";
 	private static final String NODE_ATTR_TO_URL = "to-url";
 
+	private static final String LOGIN_URL = "url";
+
     /**
      * The context parameter name for static resource path configured in web.xml
      */
@@ -128,8 +130,25 @@ public class PageProtectionContextListener implements ServletContextListener {
 					Element tag = (Element) node;
 					
 					// check tag name
-					if (false == "request".equals(tag.getTagName())) {
+					String tagName = tag.getTagName();
+					if (false == "request".equals(tagName) && false == "login-page".equals(tagName)) {
 						throw new InvalidXmlFileException("标签<" + tag.getTagName() + ">不存在");
+					}
+
+					// 这个标签是用来指定登陆页面URL的
+					// 该标签只会出现一次
+					if ("login-page".equals(tagName)) {
+						String url = tag.getAttribute(LOGIN_URL);
+						if (null == url || url.isEmpty()) {
+							throw new InvalidXmlFileException("标签<" + tagName + ">缺少'" + LOGIN_URL + "'属性");
+						}
+						this.rcm.setLoginUrl(url);
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("登陆页面url:{}", url);
+						}
+
+						continue;
 					}
 					
 					// check the existence of tag attributes

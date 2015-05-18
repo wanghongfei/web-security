@@ -63,6 +63,21 @@ public class PageProtectionFilter implements Filter {
 		
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
+		// 访问该URL不需要登陆
+		if (null == rInfo) {
+			chain.doFilter(request, response);
+			return;
+		}
+
+		// 访问该URL需要登陆
+		if (false == isLoggedIn(req)) {
+			// 用户没有登陆
+			// 重定向到login页面
+			ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
+			return;
+		}
+
+		// 检查role是否满足
 		if (false == checkRole(rInfo, req)) {
 			// response error information to client
 			ResponseUtils.responseBadRole((HttpServletResponse) response, rInfo);
@@ -82,7 +97,32 @@ public class PageProtectionFilter implements Filter {
 		// TODO Auto-generated method stub
 
 	}
-	
+
+	/**
+	 * 检查用户是否登陆
+	 * @param req
+	 * @return
+	 */
+	private boolean isLoggedIn(HttpServletRequest req) {
+		// check the existence of session
+		boolean sessionExist = isSessionExisted(req);
+		// no session exists, return false
+		if (false == sessionExist) {
+			return false;
+		}
+
+		// session exists
+		// check whether client is logged in
+		HttpSession session = req.getSession();
+		Credential credential = CredentialUtils.getCredential(session);
+		// client has not logged in, return false
+		if (null == credential) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * check whether the client has enough roles.
 	 * if client does not have session and this URL needs roles, return false
@@ -102,8 +142,8 @@ public class PageProtectionFilter implements Filter {
 		if (null == roleList) {
 			return true;
 		}
-		
-		// check the existence of session
+
+/*		// check the existence of session
 		boolean sessionExist = isSessionExisted(req);
 		// no session exists, return false
 		if (false == sessionExist) {
@@ -117,10 +157,10 @@ public class PageProtectionFilter implements Filter {
 		// client has not logged in, return false
 		if (null == credential) {
 			return false;
-		}
+		}*/
 		
 		
-		return checkRole(roleList, credential);
+		return checkRole(roleList, CredentialUtils.getCredential(req.getSession()));
 	}
 	
 	/**

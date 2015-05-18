@@ -1,12 +1,10 @@
 package cn.fh.security.utils;
 
+import cn.fh.security.RoleInfo;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cn.fh.security.RoleInfo;
 
 public class ResponseUtils {
 	private ResponseUtils() {
@@ -31,5 +29,9 @@ public class ResponseUtils {
 		
 		out.write("bad role".getBytes());
 		out.close();
+	}
+
+	public static void sendRedirect(HttpServletResponse resp, String loginUrl) throws IOException {
+		resp.sendRedirect(loginUrl);
 	}
 }

@@ -5,4 +5,6 @@
 	<!-- <request url="/backstage/statistics" role="ADMIN USER" /> -->
 	<request url="/backstage/*" role="ADMIN USER" />
 	<request url="/admin/*" role="ADMIN USER" to-url="/error" />
+
+	<login-page url="hello" />
 </page>
