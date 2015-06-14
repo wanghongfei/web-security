@@ -23,6 +23,11 @@
 		<filter-name>Page Protection Filter</filter-name>
 		<filter-class>cn.fh.security.servlet.PageProtectionFilter</filter-class>
 	</filter>
+	
+	<context-param>
+            <param-name>STATIC_RESOURCE_PATH</param-name>
+            <param-value>/assets:/resources:/js:/img:/css</param-value>
+    </context-param>
 ```
 
 
