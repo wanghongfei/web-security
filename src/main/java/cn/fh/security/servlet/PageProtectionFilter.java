@@ -57,10 +57,13 @@ public class PageProtectionFilter implements Filter {
 		}
 		
 		// the request is for static resource, just let it go.
-		if (url.startsWith(PageProtectionContextListener.STATIC_RESOURCE_PATH)) {
-			chain.doFilter(request, response);
+		for (String path : PageProtectionContextListener.STATIC_RESOURCE_PATHS) {
+			if (url.startsWith(path)) {
+				chain.doFilter(request, response);
+				return;
+			}
 		}
-		
+
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
 		// 访问该URL不需要登陆

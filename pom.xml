@@ -8,7 +8,7 @@
 
 	<name>web-security</name>
 	<packaging>jar</packaging>
-	<version>1.3-beta</version>
+	<version>1.3.RELEASE</version>
 
 
 	<properties>
@@ -68,23 +68,8 @@
 
 	</dependencies>
 	<build>
-		<finalName>web-security-1.3.SNAPSHOT</finalName>
+		<finalName>web-security-1.3.RELEASE</finalName>
 		<plugins>
-
-			<!--<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<additionalProjectnatures>
-						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-					</additionalProjectnatures>
-					<additionalBuildcommands>
-						<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-					</additionalBuildcommands>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -51,7 +51,7 @@ public class PageProtectionContextListener implements ServletContextListener {
      * The path of configuration file
      */
     public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-page.xml";
-    public static String STATIC_RESOURCE_PATH = "/resources";
+    public static String[] STATIC_RESOURCE_PATHS = { "/resources" };
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -67,7 +67,9 @@ public class PageProtectionContextListener implements ServletContextListener {
         loadContextParameter(event.getServletContext());
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("静态资源目录:{}", STATIC_RESOURCE_PATH);
+			for (String path : STATIC_RESOURCE_PATHS) {
+				logger.debug("静态资源目录:{}", path);
+			}
             logger.debug("security配置文件:{}", SECURITY_CONFIG_PATH);
             logger.debug("载入页面security配置文件");
 		}
@@ -104,7 +106,8 @@ public class PageProtectionContextListener implements ServletContextListener {
     private void loadContextParameter(ServletContext ctx) {
         String resourcePath = ctx.getInitParameter(INIT_PARM_STATIC_RESOURCE_PATH);
         if (null != resourcePath) {
-            STATIC_RESOURCE_PATH = resourcePath;
+			STATIC_RESOURCE_PATHS = resourcePath.split(":");
+            //STATIC_RESOURCE_PATH = resourcePath;
         }
 
         String configPath = ctx.getInitParameter(INIT_PARM_SECURITY_CONFIG_PATH);
