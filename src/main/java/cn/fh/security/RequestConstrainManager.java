@@ -1,5 +1,7 @@
 package cn.fh.security;
 
+import cn.fh.security.model.Config;
+import cn.fh.security.model.RoleInfo;
 import cn.fh.security.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class RequestConstrainManager {
 	public static Logger logger = LoggerFactory
 			.getLogger(RequestConstrainManager.class);
+	private Config config;
 
 	/**
 	 * 登陆页面的URI
@@ -36,6 +39,10 @@ public class RequestConstrainManager {
 	 */
 	//private Map<String, List<String>> wildcardRoleMap = new HashMap<String, List<String>>();
 	private Map<String, RoleInfo> wildcardRoleMap = new HashMap<String, RoleInfo>();
+
+	public RequestConstrainManager(Config config) {
+		this.config = config;
+	}
 
 	/**
 	 * Get the roles needed for this url
@@ -76,6 +83,10 @@ public class RequestConstrainManager {
 
 	public String getLoginUrl() {
 		return loginUrl;
+	}
+
+	public Config getConfig() {
+		return config;
 	}
 
 	public void setLoginUrl(String loginUrl) {

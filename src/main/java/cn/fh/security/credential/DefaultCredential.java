@@ -27,9 +27,15 @@ public class DefaultCredential implements Credential {
 
 	
 	public DefaultCredential(Integer id, String username, String nickName, Integer credits) {
+		this.id = id;
 		this.username = username;
 		this.nickName = nickName;
 		this.credits = credits;
+	}
+
+	public DefaultCredential(Integer id, String username) {
+		this.id = id;
+		this.username = username;
 	}
 	
 

@@ -1,26 +1,29 @@
 package cn.fh.security.servlet;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import cn.fh.security.RoleInfo;
+import cn.fh.security.credential.AuthLogic;
 import cn.fh.security.credential.Credential;
+import cn.fh.security.credential.DefaultCredential;
+import cn.fh.security.model.Config;
+import cn.fh.security.model.RoleInfo;
 import cn.fh.security.utils.CredentialUtils;
 import cn.fh.security.utils.ResponseUtils;
 import cn.fh.security.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * A filter that intercepts all requests and determine whether server should 
@@ -29,8 +32,10 @@ import cn.fh.security.utils.StringUtils;
  * @author whf
  *
  */
-public class PageProtectionFilter implements Filter {
+public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionFilter.class);
+
+	private static ApplicationContext appContext;
 
 	@Override
 	public void destroy() {
@@ -53,9 +58,10 @@ public class PageProtectionFilter implements Filter {
 
 		
 		if (logger.isDebugEnabled()) {
-			logger.debug("请求url:" + url);
+			logger.debug("请求url:{}", url);
 		}
-		
+
+
 		// the request is for static resource, just let it go.
 		for (String path : PageProtectionContextListener.STATIC_RESOURCE_PATHS) {
 			if (url.startsWith(path)) {
@@ -63,6 +69,17 @@ public class PageProtectionFilter implements Filter {
 				return;
 			}
 		}
+
+		// 得到JSON配置对象
+		Config config = PageProtectionContextListener.rcm.getConfig();
+
+		// 如果启用了cookie登陆
+		// 则执行cookie自动登陆逻辑
+		if (config.isEnableAutoLogin() != null && true == config.isEnableAutoLogin()) {
+			logger.info("cookie登陆");
+			loginByCookie(config, req);
+		}
+
 
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
@@ -101,6 +118,49 @@ public class PageProtectionFilter implements Filter {
 
 	}
 
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.appContext = applicationContext;
+	}
+
+	private void loginByCookie(Config config, HttpServletRequest req) {
+		// 得到Cookie
+		Cookie[] cookies = req.getCookies();
+
+		// 查找登陆用的Cookie
+		Optional<Cookie> cookieOpt = Arrays.stream(cookies)
+				.filter(co -> co.getName().equals(config.getLoginCookieName()))
+				.findFirst();
+
+		// 从IoC容器中得到根据token登陆的业务逻辑bean
+		// 执行并得到Credential
+		// 最后将Credential放入session, 完成登陆
+		if (cookieOpt.isPresent()) {
+			Cookie authCookie = cookieOpt.get();
+			String authBeanName = config.getAuthBeanName();
+			if (null == authBeanName || authBeanName.isEmpty()) {
+				throw new IllegalStateException("authBeanName未指定");
+			}
+
+			AuthLogic authBean = (AuthLogic) appContext.getBean(authBeanName);
+			Map<String, Object> map = authBean.loginByToken(authCookie.getValue());
+			if (null == map) {
+				logger.info("cookie登陆失败");
+				return;
+			}
+
+			Credential cre = new DefaultCredential((Integer) map.get(AuthLogic.ID), (String)map.get(AuthLogic.USERNAME));
+			cre.addRole((String)map.get(AuthLogic.ROLE_NAME));
+			CredentialUtils.createCredential(req.getSession(), cre);
+
+
+			logger.info("用户通过cookie成功登陆");
+		} else {
+			logger.info("未发现token");
+		}
+
+	}
+
 	/**
 	 * 检查用户是否登陆
 	 * @param req
@@ -130,7 +190,6 @@ public class PageProtectionFilter implements Filter {
 	 * check whether the client has enough roles.
 	 * if client does not have session and this URL needs roles, return false
 	 * 
-	 * @param requestURL
 	 * @param req
 	 * @return
 	 */
@@ -146,23 +205,7 @@ public class PageProtectionFilter implements Filter {
 			return true;
 		}
 
-/*		// check the existence of session
-		boolean sessionExist = isSessionExisted(req);
-		// no session exists, return false
-		if (false == sessionExist) {
-			return false;
-		}
 
-		// session exists
-		// check whether client is logged in
-		HttpSession session = req.getSession();
-		Credential credential = CredentialUtils.getCredential(session);
-		// client has not logged in, return false
-		if (null == credential) {
-			return false;
-		}*/
-		
-		
 		return checkRole(roleList, CredentialUtils.getCredential(req.getSession()));
 	}
 	

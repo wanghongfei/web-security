@@ -1,6 +1,6 @@
 package cn.fh.security.utils;
 
-import cn.fh.security.RoleInfo;
+import cn.fh.security.model.RoleInfo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

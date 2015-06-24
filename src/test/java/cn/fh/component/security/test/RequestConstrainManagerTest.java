@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cn.fh.security.RequestConstrainManager;
-import cn.fh.security.RoleInfo;
+import cn.fh.security.model.RoleInfo;
 
 public class RequestConstrainManagerTest {
 	RequestConstrainManager rcm;
