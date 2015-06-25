@@ -4,6 +4,12 @@
 * 使用`JSON`格式做配置文件: `WEB-INF/security-config.json`:<br />
 ```
 {
+    "enableAutoLogin": true, // 是否启用Cookie自动登陆验证
+    "loginCookieName": "token", // 用于Cookie登陆的cookie名，仅当enableAutoLogin=true时有效
+    "authBeanName": "defaultAccountService", // 用于Cookie自动登陆的业务逻辑的Spring Bean名
+    "loginUrl": "/loginURL", // 登陆页面的URL
+    
+    // 拦截规则
     "interceptRole": [
         {
             "roleList": ["ADMIN"], // 表示访问该URL需要的角色名
@@ -17,7 +23,6 @@
         }
     ],
 
-    "loginUrl": "/loginURL" // 登陆页面的URL
 }
 ```
 
