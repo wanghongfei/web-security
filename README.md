@@ -1,17 +1,24 @@
 # web-security - 致力于打造一个配置极简的JavaWeb安全框架
 
-### Configuration Example
-* `WEB-INF/security-page.xml`:<br />
+### 配置说明
+* 使用`JSON`格式做配置文件: `WEB-INF/security-config.json`:<br />
 ```
-	<?xml version="1.0" encoding="UTF-8"?>
-	<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="security-page.xsd">
+{
+    "interceptRole": [
+        {
+            "roleList": ["ADMIN"], // 表示访问该URL需要的角色名
+            "toUrl": "/toUrl", // 如果验证失败，重写向到此URL
+            "url": "/url" // 要验证权限的URL
+        },
+        {
+            "roleList": ["ADMIN", "USER"],
+            "toUrl": "/toUrl",
+            "url": "/url"
+        }
+    ],
 
-		<request url="/backstage/statistics" role="ADMIN USER" />
-		<request url="/backstage/*" role="ADMIN USER" />
-		<request url="/admin/*" role="ADMIN USER" to-url="/error" />
-
-	</page>
+    "loginUrl": "/loginURL" // 登陆页面的URL
+}
 ```
 
 * `WEB-INF/web.xml`:<br />
@@ -30,5 +37,3 @@
     </context-param>
 ```
 
-
-That's all.
