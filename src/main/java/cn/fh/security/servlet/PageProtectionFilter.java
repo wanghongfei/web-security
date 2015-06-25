@@ -70,14 +70,22 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 			}
 		}
 
+		// 判断是否已经登陆
+		boolean isLoggedIn = isLoggedIn(req);
+
 		// 得到JSON配置对象
 		Config config = PageProtectionContextListener.rcm.getConfig();
 
 		// 如果启用了cookie登陆
 		// 则执行cookie自动登陆逻辑
 		if (config.isEnableAutoLogin() != null && true == config.isEnableAutoLogin()) {
-			logger.info("cookie登陆");
-			loginByCookie(config, req);
+			// 如果用户已经是登陆状态
+			// 则不执行cookie登陆逻辑
+			logger.info("isLoggedIN = ====" + isLoggedIn);
+			if (false == isLoggedIn) {
+				logger.info("cookie登陆");
+				loginByCookie(config, req);
+			}
 		}
 
 
@@ -90,7 +98,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		}
 
 		// 访问该URL需要登陆
-		if (false == isLoggedIn(req)) {
+		if (false == isLoggedIn) {
 			// 用户没有登陆
 			// 重定向到login页面
 			ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
@@ -149,9 +157,13 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 				return;
 			}
 
+			// 创建Credential
 			Credential cre = new DefaultCredential((Integer) map.get(AuthLogic.ID), (String)map.get(AuthLogic.USERNAME));
 			cre.addRole((String)map.get(AuthLogic.ROLE_NAME));
 			CredentialUtils.createCredential(req.getSession(), cre);
+
+			req.getSession().setAttribute("user", map.get(AuthLogic.MODEL));
+			req.getSession().setAttribute("role", map.get(AuthLogic.ROLE_LIST));
 
 
 			logger.info("用户通过cookie成功登陆");
