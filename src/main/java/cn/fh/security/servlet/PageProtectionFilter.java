@@ -134,6 +134,9 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	private void loginByCookie(Config config, HttpServletRequest req) {
 		// 得到Cookie
 		Cookie[] cookies = req.getCookies();
+		if (null == cookies) {
+			return;
+		}
 
 		// 查找登陆用的Cookie
 		Optional<Cookie> cookieOpt = Arrays.stream(cookies)
