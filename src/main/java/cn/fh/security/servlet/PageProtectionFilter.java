@@ -93,6 +93,10 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
 		// 访问该URL不需要登陆
 		if (null == rInfo) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("不需要登陆");
+			}
+
 			chain.doFilter(request, response);
 			return;
 		}
@@ -101,6 +105,9 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		if (false == isLoggedIn) {
 			// 用户没有登陆
 			// 重定向到login页面
+			if (logger.isDebugEnabled()) {
+				logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
+			}
 			ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
 			return;
 		}

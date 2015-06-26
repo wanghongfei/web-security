@@ -70,6 +70,7 @@ public class PageProtectionContextListener implements ServletContextListener {
 		try {
 			Config config = JsonLoader.loadJson(event.getServletContext(), SECURITY_CONFIG_PATH);
 			PageProtectionContextListener.rcm = config.buildManager();
+			PageProtectionContextListener.rcm.setLoginUrl(config.getLoginUrl());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException("web-security加载失败");
