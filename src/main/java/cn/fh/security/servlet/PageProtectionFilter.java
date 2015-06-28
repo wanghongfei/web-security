@@ -88,6 +88,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 			}
 		}
 
+		isLoggedIn = isLoggedIn(req);
 
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
@@ -238,6 +239,9 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	 */
 	private boolean isSessionExisted(HttpServletRequest req) {
 		if (null == req.getSession(false)) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("session不存在");
+			}
 			return false;
 		}
 		
