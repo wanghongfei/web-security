@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * A filter that intercepts all requests and determine whether server should 
- * process this request.
- * 
+ * 该过滤器应该放在所有过虑器之前，第一个处理请求。
+ * 该过虑器会检查每一个uri是否需要权限才能访问，如果需要则检查session中
+ * 当前用户是否有指定角色，有则放行，无则拦下请求，向客户端发送错误信息或者重定向
+ * 到配置文件中指定的uri.
+ *
  * @author whf
  *
  */
@@ -36,6 +38,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionFilter.class);
 
 	private static ApplicationContext appContext;
+	private static AuthLogic authBean;
 
 	@Override
 	public void destroy() {
@@ -58,7 +61,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 		
 		if (logger.isDebugEnabled()) {
-			logger.debug("请求url:{}", url);
+			logger.debug("请求uri:{}", url);
 		}
 
 
@@ -81,18 +84,23 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		if (config.isEnableAutoLogin() != null && true == config.isEnableAutoLogin()) {
 			// 如果用户已经是登陆状态
 			// 则不执行cookie登陆逻辑
-			logger.info("isLoggedIN = ====" + isLoggedIn);
+			if (logger.isDebugEnabled()) {
+				logger.debug("isLoggedIN = ====" + isLoggedIn);
+			}
 			if (false == isLoggedIn) {
-				logger.info("cookie登陆");
+				if (logger.isDebugEnabled()) {
+					logger.debug("cookie登陆");
+				}
+
 				loginByCookie(config, req);
+				isLoggedIn = isLoggedIn(req);
 			}
 		}
 
-		isLoggedIn = isLoggedIn(req);
 
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
-		// 访问该URL不需要登陆
+		// 访问该URL不需要登陆(权限)
 		if (null == rInfo) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("不需要登陆");
@@ -161,7 +169,12 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 				throw new IllegalStateException("authBeanName未指定");
 			}
 
-			AuthLogic authBean = (AuthLogic) appContext.getBean(authBeanName);
+			// 只有当authBean是第一次从容器中获取时才从容器中取bean
+			if (null == authBean) {
+				authBean = (AuthLogic) appContext.getBean(authBeanName);
+			}
+
+			// 调用authBean的cookie登陆业务方法
 			Map<String, Object> map = authBean.loginByToken(authCookie.getValue());
 			if (null == map) {
 				logger.info("cookie登陆失败");
@@ -170,16 +183,22 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 			// 创建Credential
 			Credential cre = new DefaultCredential((Integer) map.get(AuthLogic.ID), (String)map.get(AuthLogic.USERNAME));
-			cre.addRole((String)map.get(AuthLogic.ROLE_NAME));
+			cre.addRole((String) map.get(AuthLogic.ROLE_NAME));
+
+			// 将Credential放到session中
 			CredentialUtils.createCredential(req.getSession(), cre);
 
 			req.getSession().setAttribute("user", map.get(AuthLogic.MODEL));
 			req.getSession().setAttribute("role", map.get(AuthLogic.ROLE_LIST));
 
 
-			logger.info("用户通过cookie成功登陆");
+			if (logger.isDebugEnabled()) {
+				logger.debug("用户通过cookie成功登陆");
+			}
 		} else {
-			logger.info("未发现token");
+			if (logger.isDebugEnabled()) {
+				logger.debug("未发现token, cookie登陆失败");
+			}
 		}
 
 	}
@@ -190,15 +209,13 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	 * @return
 	 */
 	private boolean isLoggedIn(HttpServletRequest req) {
-		// check the existence of session
+		// 先检查session是否存在
 		boolean sessionExist = isSessionExisted(req);
-		// no session exists, return false
 		if (false == sessionExist) {
 			return false;
 		}
 
-		// session exists
-		// check whether client is logged in
+		// 检查session中是否有Credential对象
 		HttpSession session = req.getSession();
 		Credential credential = CredentialUtils.getCredential(session);
 		// client has not logged in, return false
@@ -222,14 +239,19 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
         }
 
 		List<String> roleList = rInfo.getRoleList();
-		
-		// this request does not need roles, return true
+
+		// 返回null说明用户虽然配置了uri安全规则
+		// 但没有为该uri指定任何角色.
+		// 这种情况默认为任何已登陆使用都可以访问
 		if (null == roleList) {
 			return true;
 		}
 
 
-		return checkRole(roleList, CredentialUtils.getCredential(req.getSession()));
+		// 查检session中的用户是否具有指定的角色
+		Credential credential = CredentialUtils.getCredential(req.getSession());
+		return roleList.stream()
+				.anyMatch( (roleName) -> credential.hasRole(roleName) );
 	}
 	
 	/**
@@ -246,17 +268,6 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * check whether the client has permission to let server process its request.
-	 * @param roleList
-	 * @param credential
-	 * @return
-	 */
-	private boolean checkRole(List<String> roleList, Credential credential) {
-		return roleList.stream()
-			.anyMatch( (roleName) -> credential.hasRole(roleName) );
 	}
 
 }

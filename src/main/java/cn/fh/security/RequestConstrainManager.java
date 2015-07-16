@@ -29,13 +29,13 @@ public class RequestConstrainManager {
 	private String loginUrl;
 
 	/**
-	 * A map used to store normal URL.
-	 * e.g.: /user/profile, /user/register
+	 * 保存不含通配符的uri - role映射.
+	 * e.g., /user/profile
 	 */
 	private Map<String, RoleInfo> roleMap = new HashMap<String, RoleInfo>();
 	/**
-	 * A map used to store URL including wildcard.
-	 * e.g.: /user/*, /chat/girls/*
+	 * 保存只在结尾处含有一个*的uri - role映射
+	 * e.g., /user/post/*
 	 */
 	private Map<String, RoleInfo> wildcardRoleMap = new HashMap<String, RoleInfo>();
 
@@ -51,9 +51,9 @@ public class RequestConstrainManager {
 	}
 
 	/**
-	 * Get the roles needed for this url
+	 * 查询指定uri对应的权限规则
 	 * @param url
-	 * @return Return null if url does not exist in this manager
+	 * @return 如果该uri不需要权限，返回null
 	 */
 	public RoleInfo get(String url) {
 		// first of all, perform accurate match

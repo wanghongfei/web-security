@@ -4,16 +4,22 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Immutable.
- * 
+ * 一条规则
+ *
  * @author whf
  *
  */
 public class RoleInfo {
+	/**
+	 * 该条规则适用的uri
+	 */
 	private String url;
+	/**
+	 * 该条规则所包含的角列表
+	 */
 	private List<String> roleList;
 	/**
-	 * Redirect to this url if validation fails
+	 * 当验证失败时跳转的uri
 	 */
 	private String toUrl = "";
 

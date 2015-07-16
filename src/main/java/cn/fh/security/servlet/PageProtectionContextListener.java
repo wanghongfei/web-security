@@ -19,6 +19,8 @@ import java.io.IOException;
  *     <li>STATIC_RESOURCE_PATH: This directory contains your static resources such as *.js, *.css, *.jpeg files.
  *     <li>SECURITY_CONFIG_PATH: The path to your own configuration xml file for this framework.
  * </ul>
+ *
+ * 在servlet容器启动时加载配置文件.
  * 
  * @author whf
  *
@@ -26,11 +28,22 @@ import java.io.IOException;
 public class PageProtectionContextListener implements ServletContextListener {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionContextListener.class);
 	public static RequestConstrainManager rcm;
-	
-	private static final String NODE_ATTR_URL = "url";
-	private static final String NODE_ATTR_ROLE = "role";
-	private static final String NODE_ATTR_TO_URL = "to-url";
 
+	/**
+	 * @deprecated
+	 */
+	private static final String NODE_ATTR_URL = "url";
+	/**
+	 * @deprecated
+	 */
+	private static final String NODE_ATTR_ROLE = "role";
+	/**
+	 * @deprecated
+	 */
+	private static final String NODE_ATTR_TO_URL = "to-url";
+	/**
+	 * @deprecated
+	 */
 	private static final String LOGIN_URL = "url";
 
     /**
@@ -84,13 +97,18 @@ public class PageProtectionContextListener implements ServletContextListener {
 	}
 
 
+	/**
+	 * 从web.xml中读取容器上下文变量
+	 * @param ctx
+	 */
     private void loadContextParameter(ServletContext ctx) {
+		// 静态资源目录变量
         String resourcePath = ctx.getInitParameter(INIT_PARM_STATIC_RESOURCE_PATH);
         if (null != resourcePath) {
 			STATIC_RESOURCE_PATHS = resourcePath.split(":");
-            //STATIC_RESOURCE_PATH = resourcePath;
         }
 
+		// 读取配置文件路径
         String configPath = ctx.getInitParameter(INIT_PARM_SECURITY_CONFIG_PATH);
         if (null != configPath) {
             SECURITY_CONFIG_PATH = configPath;
