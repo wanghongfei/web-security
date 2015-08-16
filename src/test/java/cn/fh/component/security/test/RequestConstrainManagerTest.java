@@ -1,7 +1,10 @@
 package cn.fh.component.security.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import cn.fh.security.model.Config;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +14,63 @@ import cn.fh.security.model.RoleInfo;
 
 public class RequestConstrainManagerTest {
 	RequestConstrainManager rcm;
-	
+
+    @Before
+    public void init() {
+        List<RoleInfo> infoList = new ArrayList<>(5);
+        RoleInfo info = new RoleInfo();
+        info.setRoleList(Arrays.asList( "ADMIN", "STUDENT", "EMPLOYER" ));
+        info.setUrl("/public");
+        infoList.add(info);
+
+
+
+        info = new RoleInfo();
+        info.setRoleList(Arrays.asList( "ADMIN" ));
+        info.setUrl("/manager");
+        infoList.add(info);
+
+        info = new RoleInfo();
+        info.setRoleList(Arrays.asList( "ADMIN" ));
+        info.setUrl("/manager/*");
+        infoList.add(info);
+
+
+
+        info = new RoleInfo();
+        info.setRoleList(Arrays.asList( "STUDENT", "EMPLOYER" ));
+        info.setUrl("/user");
+        infoList.add(info);
+
+        info = new RoleInfo();
+        info.setRoleList(Arrays.asList( "STUDENT", "EMPLOYER" ));
+        info.setUrl("/user/**");
+        infoList.add(info);
+
+        Config conf = new Config(infoList, "/login");
+        rcm = conf.buildManager();
+    }
+
+    @Test
+    public void test() {
+        Assert.assertNotNull(rcm.get("/public"));
+        Assert.assertNotNull(rcm.get("/manager"));
+        Assert.assertNotNull(rcm.get("/user"));
+
+        Assert.assertNull(rcm.get("/what"));
+        Assert.assertNull(rcm.get("/public/hello"));
+
+
+        Assert.assertNotNull(rcm.get("/manager/hello"));
+        Assert.assertNotNull(rcm.get("/manager/hello2"));
+        Assert.assertNull(rcm.get("/manager/hello2/shouldbenull"));
+
+
+        Assert.assertNotNull(rcm.get("/user/hello2/hello"));
+        Assert.assertNotNull(rcm.get("/user/hello"));
+        Assert.assertNotNull(rcm.get("/user/hello/a/b/c/d"));
+    }
+
 /*
 	@Before
 	public void init() {

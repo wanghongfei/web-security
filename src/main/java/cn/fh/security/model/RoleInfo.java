@@ -53,4 +53,15 @@ public class RoleInfo {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("RoleInfo{");
+        sb.append("url='").append(url).append('\'');
+        sb.append(", roleList=").append(roleList);
+        sb.append(", toUrl='").append(toUrl).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
+
