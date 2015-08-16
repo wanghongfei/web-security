@@ -64,14 +64,12 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 			logger.debug("请求uri:{}", url);
 		}
 
+        // 检查是否是静态资源
+        if (true == isStaticResource(url)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
-		// the request is for static resource, just let it go.
-		for (String path : PageProtectionContextListener.STATIC_RESOURCE_PATHS) {
-			if (url.startsWith(path)) {
-				chain.doFilter(request, response);
-				return;
-			}
-		}
 
 		// 判断是否已经登陆
 		boolean isLoggedIn = isLoggedIn(req);
@@ -253,6 +251,16 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		return roleList.stream()
 				.anyMatch( (roleName) -> credential.hasRole(roleName) );
 	}
+
+    private boolean isStaticResource(String url) {
+        for (String path : PageProtectionContextListener.STATIC_RESOURCE_PATHS) {
+            if (url.startsWith(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 	
 	/**
 	 * check the existence of session

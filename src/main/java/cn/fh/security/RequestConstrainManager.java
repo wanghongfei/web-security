@@ -2,7 +2,9 @@ package cn.fh.security;
 
 import cn.fh.security.model.Config;
 import cn.fh.security.model.RoleInfo;
+import cn.fh.security.utils.LogUtils;
 import cn.fh.security.utils.StringUtils;
+import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,16 +13,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class contains 2 maps from url to role where url is the request 
- * made by client and the role is the Role needed in order to process 
- * this request.
- * 
+ * URL规则管理器。
+ * 本类持有3个Map对象，分别存放了以*, **结尾的URL，和不以任何
+ * 通配符结尾的URL，并提供查询功能
+ *
  * @author whf
  *
  */
 public class RequestConstrainManager {
 	public static Logger logger = LoggerFactory
 			.getLogger(RequestConstrainManager.class);
+
 	private Config config;
 
 	/**
@@ -57,37 +60,20 @@ public class RequestConstrainManager {
 	 */
 	public RoleInfo get(String url) {
 		// first of all, perform accurate match
-		RoleInfo info = this.roleMap.get(url);
-		if (null != info) {
-			return info;
-		}
+		RoleInfo info = doAccurateMatch(url);
+        if (null != info) {
+            return info;
+        }
 
 		// if no List found, perform wildcard match
-		String wildcardUrl = StringUtils.trimLastUrlToken(url) + "/*";
-		info = this.wildcardRoleMap.get(wildcardUrl);
-		if (null != info) {
-			return info;
-		}
+        info = doSingleWildcardMatch(url);
+        if (null != info) {
+            return info;
+        }
 
 		// 如果*配置也没找到
 		// 匹配以**结尾的URL
-		Set<String> keySet = doubleWildcardRoleMap.keySet();
-		for (String rule : keySet) {
-            // 去掉rule结尾的**
-            // 如, /user** -> /user
-			String trimmedRule = rule.substring(0, rule.length() - 2);
-			if (logger.isDebugEnabled()) {
-				logger.debug("对比: request url = {}, rule url = {}", url, trimmedRule);
-			}
-
-			if (url.startsWith(trimmedRule)) {
-				info = doubleWildcardRoleMap.get(rule);
-				if (logger.isDebugEnabled()) {
-					logger.debug("命中, role info = {}", info);
-				}
-				break;
-			}
-		}
+        info = doDoubleWildcardMatch(url);
 
 		return info;
 	}
@@ -102,13 +88,67 @@ public class RequestConstrainManager {
         // 以**结尾的rule放到doubleWildcardRoleMap中
 		if (url.endsWith("**")) {
 			this.doubleWildcardRoleMap.put(url, roleInfo);
+
 		} else if(url.endsWith("*")) {
 			this.wildcardRoleMap.put(url, roleInfo);
+
 		} else {
 			// if not, put this url into roleMap
 			this.roleMap.put(url, roleInfo);
 		}
 	}
+
+    /**
+     * 执行精确匹配
+     * @param url
+     * @return
+     */
+    private RoleInfo doAccurateMatch(String url) {
+        return this.roleMap.get(url);
+    }
+
+    /**
+     * 从以*结尾的规则中查询有没有匹配
+     * @param url
+     * @return
+     */
+    private RoleInfo doSingleWildcardMatch(String url) {
+        RoleInfo info = null;
+
+        String wildcardUrl = StringUtils.trimLastUrlToken(url) + "/*";
+        info = this.wildcardRoleMap.get(wildcardUrl);
+
+        return info;
+    }
+
+    /**
+     * 从以**结尾的规则中查找有没有匹配。
+     * 将**结尾的url最后的2个*去掉，然后调用请求url
+     * 的startsWith()方法判断是否匹配
+     *
+     * @param url
+     * @return
+     */
+    private RoleInfo doDoubleWildcardMatch(String url) {
+        RoleInfo info = null;
+
+        Set<String> keySet = doubleWildcardRoleMap.keySet();
+        for (String rule : keySet) {
+            // 去掉rule结尾的**
+            // 如, /user** -> /user
+            String trimmedRule = rule.substring(0, rule.length() - 2);
+            LogUtils.printLog(logger, Level.DEBUG, "对比: request url = {}, rule url = {}", url, trimmedRule);
+
+            if (url.startsWith(trimmedRule)) {
+                info = doubleWildcardRoleMap.get(rule);
+                LogUtils.printLog(logger, Level.DEBUG, "命中, role info = {}", info);
+
+                break;
+            }
+        }
+
+        return info;
+    }
 
 	public String getLoginUrl() {
 		return loginUrl;
