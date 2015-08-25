@@ -115,7 +115,17 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 			if (logger.isDebugEnabled()) {
 				logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
 			}
-			ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
+
+            // 如果是POST方法
+            // 返回json
+            if (req.getMethod().equals("POST") || req.getMethod().equals("PUT") || req.getMethod().equals("DELETE")) {
+                ResponseUtils.sendErrorMessage((HttpServletResponse)response);
+            } else {
+                // 是GET方法
+                // 重定向
+                ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
+            }
+
 			return;
 		}
 
