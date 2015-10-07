@@ -85,7 +85,7 @@
 
 	</dependencies>
 	<build>
-		<finalName>web-security-2.1.1.RELEASE</finalName>
+		<finalName>web-security-2.1.2.RELEASE</finalName>
 		<plugins>
 
 			<plugin>
