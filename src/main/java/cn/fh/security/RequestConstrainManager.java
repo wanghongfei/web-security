@@ -4,7 +4,7 @@ import cn.fh.security.model.Config;
 import cn.fh.security.model.RoleInfo;
 import cn.fh.security.utils.LogUtils;
 import cn.fh.security.utils.StringUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
