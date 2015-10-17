@@ -15,9 +15,6 @@ public class Config {
     private List<RoleInfo> interceptRule;
     private String loginUrl;
 
-    private Boolean enableAutoLogin;
-    private String authBeanName;
-    private String loginCookieName;
 
 
     public Config() {}
@@ -57,29 +54,5 @@ public class Config {
 
     public void setLoginUrl(String loginUrl) {
         this.loginUrl = loginUrl;
-    }
-
-    public String getAuthBeanName() {
-        return authBeanName;
-    }
-
-    public void setAuthBeanName(String authBeanName) {
-        this.authBeanName = authBeanName;
-    }
-
-    public String getLoginCookieName() {
-        return loginCookieName;
-    }
-
-    public void setLoginCookieName(String loginCookieName) {
-        this.loginCookieName = loginCookieName;
-    }
-
-    public Boolean isEnableAutoLogin() {
-        return enableAutoLogin;
-    }
-
-    public void setEnableAutoLogin(Boolean enableAutoLogin) {
-        this.enableAutoLogin = enableAutoLogin;
     }
 }

@@ -77,24 +77,6 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		// 得到JSON配置对象
 		Config config = PageProtectionContextListener.rcm.getConfig();
 
-		// 如果启用了cookie登陆
-		// 则执行cookie自动登陆逻辑
-		if (config.isEnableAutoLogin() != null && true == config.isEnableAutoLogin()) {
-			// 如果用户已经是登陆状态
-			// 则不执行cookie登陆逻辑
-			if (logger.isDebugEnabled()) {
-				logger.debug("isLoggedIN = ====" + isLoggedIn);
-			}
-			if (false == isLoggedIn) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("cookie登陆");
-				}
-
-				loginByCookie(config, req);
-				isLoggedIn = isLoggedIn(req);
-			}
-		}
-
 
 		// check whether the client has enough roles
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
@@ -155,61 +137,6 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		this.appContext = applicationContext;
 	}
 
-	private void loginByCookie(Config config, HttpServletRequest req) {
-		// 得到Cookie
-		Cookie[] cookies = req.getCookies();
-		if (null == cookies) {
-			return;
-		}
-
-		// 查找登陆用的Cookie
-		Optional<Cookie> cookieOpt = Arrays.stream(cookies)
-				.filter(co -> co.getName().equals(config.getLoginCookieName()))
-				.findFirst();
-
-		// 从IoC容器中得到根据token登陆的业务逻辑bean
-		// 执行并得到Credential
-		// 最后将Credential放入session, 完成登陆
-		if (cookieOpt.isPresent()) {
-			Cookie authCookie = cookieOpt.get();
-			String authBeanName = config.getAuthBeanName();
-			if (null == authBeanName || authBeanName.isEmpty()) {
-				throw new IllegalStateException("authBeanName未指定");
-			}
-
-			// 只有当authBean是第一次从容器中获取时才从容器中取bean
-			if (null == authBean) {
-				authBean = (AuthLogic) appContext.getBean(authBeanName);
-			}
-
-			// 调用authBean的cookie登陆业务方法
-			Map<String, Object> map = authBean.loginByToken(authCookie.getValue());
-			if (null == map) {
-				logger.info("cookie登陆失败");
-				return;
-			}
-
-			// 创建Credential
-			Credential cre = new DefaultCredential((Integer) map.get(AuthLogic.ID), (String)map.get(AuthLogic.USERNAME));
-			cre.addRole((String) map.get(AuthLogic.ROLE_NAME));
-
-			// 将Credential放到session中
-			CredentialUtils.createCredential(req.getSession(), cre);
-
-			req.getSession().setAttribute("user", map.get(AuthLogic.MODEL));
-			req.getSession().setAttribute("role", map.get(AuthLogic.ROLE_LIST));
-
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("用户通过cookie成功登陆");
-			}
-		} else {
-			if (logger.isDebugEnabled()) {
-				logger.debug("未发现token, cookie登陆失败");
-			}
-		}
-
-	}
 
 	/**
 	 * 检查用户是否登陆
@@ -217,15 +144,8 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 	 * @return
 	 */
 	private boolean isLoggedIn(HttpServletRequest req) {
-		// 先检查session是否存在
-		boolean sessionExist = isSessionExisted(req);
-		if (false == sessionExist) {
-			return false;
-		}
-
-		// 检查session中是否有Credential对象
-		HttpSession session = req.getSession();
-		Credential credential = CredentialUtils.getCredential(session);
+		// 检查request中是否有Credential对象
+		Credential credential = (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
 		// client has not logged in, return false
 		if (null == credential) {
 			return false;
@@ -272,20 +192,4 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
         return false;
     }
 	
-	/**
-	 * check the existence of session
-	 * @param req
-	 * @return
-	 */
-	private boolean isSessionExisted(HttpServletRequest req) {
-		if (null == req.getSession(false)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("session不存在");
-			}
-			return false;
-		}
-		
-		return true;
-	}
-
 }
