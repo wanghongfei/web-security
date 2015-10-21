@@ -73,6 +73,9 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 		// 判断是否已经登陆
 		boolean isLoggedIn = isLoggedIn(req);
+        if (logger.isDebugEnabled()) {
+            logger.debug("credential = {} ", isLoggedIn);
+        }
 
 		// 得到JSON配置对象
 		Config config = PageProtectionContextListener.rcm.getConfig();
@@ -176,8 +179,9 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		}
 
 
-		// 查检session中的用户是否具有指定的角色
-		Credential credential = CredentialUtils.getCredential(req.getSession());
+		// 查检credential中的用户是否具有指定的角色
+		//Credential credential = CredentialUtils.getCredential(req.getSession());
+        Credential credential = (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
 		return roleList.stream()
 				.anyMatch( (roleName) -> credential.hasRole(roleName) );
 	}
