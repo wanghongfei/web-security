@@ -70,6 +70,11 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
             return;
         }
 
+        if (req.getMethod().equals("OPTIONS")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
 
 		// 判断是否已经登陆
 		boolean isLoggedIn = isLoggedIn(req);
