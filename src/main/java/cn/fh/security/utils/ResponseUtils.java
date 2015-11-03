@@ -42,8 +42,10 @@ public class ResponseUtils {
 
     public static void sendErrorMessage(HttpServletResponse resp) throws IOException {
         Map<String, Object> map = new HashMap<>();
-        map.put("message", "13");
+        map.put("message", "PERMISSION_ERROR");
         map.put("result", "false");
+        map.put("code", 13);
+        map.put("data", null);
 
         JSONObject jsonObject = new JSONObject(map);
         String json = jsonObject.toJSONString();
