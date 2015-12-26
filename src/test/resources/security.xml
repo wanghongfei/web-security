@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="security-config.xsd">
+
+    <login-page>/login</login-page>
+
+    <rules>
+        <request path="/user" roles="ADMIN STUDENT"/>
+        <request path="/admin/post" roles="ADMIN" method="POST"/>
+    </rules>
+
+</security>
+
