@@ -1,9 +1,12 @@
 package cn.fh.security.servlet;
 
 import cn.fh.security.RequestConstrainManager;
+import cn.fh.security.exception.InvalidXmlFileException;
 import cn.fh.security.model.Config;
 import cn.fh.security.utils.JsonLoader;
+import cn.fh.security.utils.XmlLoader;
 import com.alibaba.fastjson.JSONException;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +58,7 @@ public class PageProtectionContextListener implements ServletContextListener {
     /**
      * The path of configuration file
      */
-    public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-config.json";
+    public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-config.xml";
     public static String[] STATIC_RESOURCE_PATHS = { "/resources" };
 
 	@Override
@@ -81,16 +84,20 @@ public class PageProtectionContextListener implements ServletContextListener {
 
 		// 加载JSON配置文件
 		try {
-			Config config = JsonLoader.loadJson(event.getServletContext(), SECURITY_CONFIG_PATH);
+			//Config config = JsonLoader.loadJson(event.getServletContext(), SECURITY_CONFIG_PATH);
+            Config config = XmlLoader.loadXml(event.getServletContext(), SECURITY_CONFIG_PATH);
 			PageProtectionContextListener.rcm = config.buildManager();
 			PageProtectionContextListener.rcm.setLoginUrl(config.getLoginUrl());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IllegalStateException("web-security加载失败");
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 			throw new IllegalStateException("JSON格式非法");
-		}
+
+		} catch (DocumentException e) {
+            e.printStackTrace();
+            throw new InvalidXmlFileException("XML file syntax error");
+
+        }
 
 		logger.info("页面security载入完毕");
 

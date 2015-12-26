@@ -98,6 +98,7 @@ public class XmlLoader {
 
                 log.info("rule found: {} {} -> {}", method, path, rList);
             }
+            config.setInterceptRule(roleList);
         }
 
         return config;

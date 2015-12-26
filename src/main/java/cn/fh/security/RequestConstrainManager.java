@@ -2,9 +2,7 @@ package cn.fh.security;
 
 import cn.fh.security.model.Config;
 import cn.fh.security.model.RoleInfo;
-import cn.fh.security.utils.LogUtils;
 import cn.fh.security.utils.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,11 +135,11 @@ public class RequestConstrainManager {
             // 去掉rule结尾的**
             // 如, /user** -> /user
             String trimmedRule = rule.substring(0, rule.length() - 2);
-            LogUtils.printLog(logger, Level.DEBUG, "对比: request url = {}, rule url = {}", url, trimmedRule);
+            logger.debug("对比: request url = {}, rule url = {}", url, trimmedRule);
 
             if (url.startsWith(trimmedRule)) {
                 info = doubleWildcardRoleMap.get(rule);
-                LogUtils.printLog(logger, Level.DEBUG, "命中, role info = {}", info);
+                logger.debug("命中, role info = {}", info);
 
                 break;
             }

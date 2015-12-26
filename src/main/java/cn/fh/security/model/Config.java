@@ -31,9 +31,9 @@ public class Config {
 
         RequestConstrainManager manager = new RequestConstrainManager(this);
         for (RoleInfo info : interceptRule) {
-            for (String role : info.getRoleList()) {
+/*            for (String role : info.getRoleList()) {
                 logger.info("找到rule:{}->{}", info.getUrl(), role);
-            }
+            }*/
             manager.put(info.getUrl(), info);
         }
 

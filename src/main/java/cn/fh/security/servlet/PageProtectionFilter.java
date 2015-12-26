@@ -82,8 +82,6 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
             logger.debug("credential = {} ", isLoggedIn);
         }
 
-		// 得到JSON配置对象
-		Config config = PageProtectionContextListener.rcm.getConfig();
 
 
 		// check whether the client has enough roles
