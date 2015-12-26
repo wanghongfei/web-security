@@ -1,29 +1,22 @@
 # web-security - 致力于打造一个配置极简的JavaWeb安全框架
 
 ### 配置说明
-* 使用`JSON`格式做配置文件: `WEB-INF/security-config.json`:<br />
+* 使用`XML`格式做配置文件: `WEB-INF/security-config.xml`:<br />
 ```
-{
-    "enableAutoLogin": true, // 是否启用Cookie自动登陆验证
-    "loginCookieName": "token", // 用于Cookie登陆的cookie名，仅当enableAutoLogin=true时有效
-    "authBeanName": "defaultAccountService", // 用于Cookie自动登陆的业务逻辑的Spring Bean名
-    "loginUrl": "/loginURL", // 登陆页面的URL
-    
-    // 拦截规则
-    "interceptRole": [
-        {
-            "roleList": ["ADMIN"], // 表示访问该URL需要的角色名
-            "toUrl": "/toUrl", // 如果验证失败，重写向到此URL
-            "url": "/url" // 要验证权限的URL
-        },
-        {
-            "roleList": ["ADMIN", "USER"],
-            "toUrl": "/toUrl",
-            "url": "/url"
-        }
-    ],
+<?xml version="1.0" encoding="UTF-8"?>
+<security xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="security-config.xsd">
 
-}
+	<!-- 登陆页面地址 -->
+    <login-page>/login</login-page>
+
+	<!-- URL拦截规则定义 -->
+    <rules>
+        <request path="/user**" roles="ADMIN STUDENT EMPLOYER"/>
+
+    </rules>
+
+</security>
 ```
 
 * `WEB-INF/web.xml`:<br />
