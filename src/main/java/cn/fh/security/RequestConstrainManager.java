@@ -130,20 +130,22 @@ public class RequestConstrainManager {
     private RoleInfo doDoubleWildcardMatch(String url) {
         RoleInfo info = null;
 
-        Set<String> keySet = doubleWildcardRoleMap.keySet();
-        for (String rule : keySet) {
+        for (Map.Entry<String, RoleInfo> entry : doubleWildcardRoleMap.entrySet()) {
             // 去掉rule结尾的**
             // 如, /user** -> /user
+            String rule = entry.getKey();
             String trimmedRule = rule.substring(0, rule.length() - 2);
             logger.debug("对比: request url = {}, rule url = {}", url, trimmedRule);
 
             if (url.startsWith(trimmedRule)) {
-                info = doubleWildcardRoleMap.get(rule);
+                info = entry.getValue();
                 logger.debug("命中, role info = {}", info);
 
                 break;
             }
+
         }
+
 
         return info;
     }
