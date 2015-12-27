@@ -54,15 +54,12 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 			FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest req = (HttpServletRequest) request;
-		String url = null;
-		
-		// remove context name from URI
-		url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
 
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("请求uri:{}", url);
-		}
+		// remove context name from URI
+		String url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
+
+
+        logger.debug("请求uri:{}", url);
 
         // 检查是否是静态资源
         if (true == isStaticResource(url)) {
@@ -78,20 +75,18 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 		// 判断是否已经登陆
 		boolean isLoggedIn = isLoggedIn(req);
-        if (logger.isDebugEnabled()) {
-            logger.debug("credential = {} ", isLoggedIn);
-        }
+        logger.debug("credential = {} ", isLoggedIn);
 
 
 
-		// check whether the client has enough roles
+        // 查询该url对应的role
 		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
+        // rInfo为空说明
 		// 访问该URL不需要登陆(权限)
 		if (null == rInfo) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("不需要登陆");
-			}
+            logger.debug("不需要登陆");
 
+            // 放行
 			chain.doFilter(request, response);
 			return;
 		}
@@ -100,9 +95,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 		if (false == isLoggedIn) {
 			// 用户没有登陆
 			// 重定向到login页面
-			if (logger.isDebugEnabled()) {
-				logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
-			}
+            logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
 
             // 如果是POST方法
             // 返回json
