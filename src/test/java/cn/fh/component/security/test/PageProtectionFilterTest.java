@@ -29,12 +29,12 @@ public class PageProtectionFilterTest {
 
 	@Before
 	public void initMockitoObjects() {
-		when(req.getContextPath())
+/*		when(req.getContextPath())
 			    .thenReturn("/");
         when(req.getRequestURI())
                 .thenReturn("/admin/post");
         when(req.getSession())
-                .thenReturn(null);
+                .thenReturn(null);*/
 
 	}
 	
