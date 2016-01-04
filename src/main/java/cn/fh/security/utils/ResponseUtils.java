@@ -45,12 +45,13 @@ public class ResponseUtils {
         map.put("message", "PERMISSION_ERROR");
         map.put("result", "false");
         map.put("code", 13);
-        map.put("data", null);
+        map.put("data", "");
 
         JSONObject jsonObject = new JSONObject(map);
         String json = jsonObject.toJSONString();
 
         resp.setStatus(403);
+        resp.setContentType("application/json");
         resp.getOutputStream().write(json.getBytes());
         resp.getOutputStream().close();
 
