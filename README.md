@@ -13,6 +13,8 @@
 
 	<!-- 登陆页面地址 -->
 	<login-page>/login</login-page>
+	<!-- 访问权限不足时重定向的地址 -->
+	<auth-error-page>/error</auth-error-page>
 
 	<!-- URL拦截规则定义 -->
 	<rules>
@@ -22,7 +24,7 @@
 </security>
 ```
 
-web.xml配置:
+普通Java Web项目中web.xml配置:
 ```
 <listener>
     <listener-class>cn.fh.security.servlet.PageProtectionContextListener</listener-class>
@@ -37,4 +39,32 @@ web.xml配置:
         <param-name>STATIC_RESOURCE_PATH</param-name>
         <param-value>/assets:/resources:/js:/img:/css</param-value>
 </context-param>
+```
+
+Spring Boot下的配置方法:
+```
+    /**
+     * 注册过虑器
+     * @return
+     */
+    @Bean
+    public FilterRegistrationBean registerFilters() {
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(new PageProtectionFilter());
+        bean.addUrlPatterns("/*");
+        // 指定配置文件位置, 默认为/WEB-INF/security-config.xml
+        bean.addInitParameter("SECURITY_CONFIG_PATH", "security/security-config.xml");
+        bean.setName("Web Security Filter");
+
+        return bean;
+    }
+
+    /**
+     * 注册Listener
+     * @return
+     */
+    @Bean
+    public PageProtectionContextListener registerListener() {
+        return new PageProtectionContextListener();
+    }
 ```
