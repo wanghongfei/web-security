@@ -101,18 +101,13 @@ public class PageProtectionFilter implements Filter {
 		// 检查role是否满足
 		if (false == checkRole(rInfo, req)) {
             // 权限不足
-
-            // 如果是GET请求, redirect到指定页面
-            if (req.getMethod().equals("GET") || req.getMethod().equals("HEAD")) {
-                String targetAddr = PageProtectionContextListener.rcm.getAuthErrorUrl();
-                if (null == targetAddr) {
-                    targetAddr = PageProtectionContextListener.rcm.getLoginUrl();
-                }
-
-                ResponseUtils.sendRedirect((HttpServletResponse) response, targetAddr);
-            } else {
-                ResponseUtils.sendErrorMessage((HttpServletResponse)response, "PERMISSION_ERROR", 13);
+            // redirect到指定页面
+            String targetAddr = PageProtectionContextListener.rcm.getAuthErrorUrl();
+            if (null == targetAddr) {
+                targetAddr = PageProtectionContextListener.rcm.getLoginUrl();
             }
+
+            ResponseUtils.sendRedirect((HttpServletResponse) response, targetAddr);
 
 			return;
 		}
