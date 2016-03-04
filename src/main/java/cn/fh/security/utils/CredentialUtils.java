@@ -2,6 +2,7 @@ package cn.fh.security.utils;
 
 import cn.fh.security.credential.Credential;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +19,15 @@ public class CredentialUtils {
 		
 		return credential;
 	}
+
+    /**
+     * 从Request对象中取credential
+     * @param req
+     * @return
+     */
+    public static Credential getCredential(HttpServletRequest req) {
+        return (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
+    }
 	
 	/**
 	 * Put credential into session
@@ -33,6 +43,15 @@ public class CredentialUtils {
 
 		session.setAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE, credential);
 	}
+
+    /**
+     * 将Credential对象放入request对象中
+     * @param req
+     * @param credential
+     */
+    public static void createCredential(HttpServletRequest req, Credential credential) {
+        req.setAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE, credential);
+    }
 	
 	/**
 	 * Get cryptograph of the password using SHA-1 algorithm.
