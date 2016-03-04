@@ -4,7 +4,10 @@
 
         <xs:complexType>
             <xs:sequence>
+
                 <xs:element name="login-page" type="xs:string" maxOccurs="1" />
+                <xs:element name="auth-error-page" type="xs:string" maxOccurs="1" />
+
                 <xs:element name="rules">
                     <xs:complexType>
                         <xs:sequence>

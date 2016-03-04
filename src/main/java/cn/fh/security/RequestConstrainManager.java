@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * URL规则管理器。
@@ -24,10 +23,6 @@ public class RequestConstrainManager {
 
 	private Config config;
 
-	/**
-	 * 登陆页面的URI
-	 */
-	private String loginUrl;
 
 	/**
 	 * 保存不含通配符的uri - role映射.
@@ -151,14 +146,15 @@ public class RequestConstrainManager {
     }
 
 	public String getLoginUrl() {
-		return loginUrl;
+        return config.getLoginUrl();
 	}
+
+    public String getAuthErrorUrl() {
+        return config.getAuthErrorUrl();
+    }
 
 	public Config getConfig() {
 		return config;
 	}
 
-	public void setLoginUrl(String loginUrl) {
-		this.loginUrl = loginUrl;
-	}
 }

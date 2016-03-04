@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="security-config.xsd">
+
+    <!-- 未登陆时redirect到此地址 -->
+    <login-page>/login</login-page>
+    <!-- 已登陆但权限不足时redirect地址 -->
+    <auth-error-page>/error</auth-error-page>
+
+    <rules>
+        <request path="/user**" roles="ADMIN STUDENT EMPLOYER"/>
+
+        <request path="/api/job/u" roles="ADMIN STUDENT EMPLOYER"/>
+        <request path="/api/sh/u" roles="ADMIN STUDENT EMPLOYER"/>
+        <request path="/api/review/u**" roles="ADMIN STUDENT EMPLOYER"/>
+        <request path="/api/recommend/u**" roles="ADMIN STUDENT EMPLOYER"/>
+        <request path="/api/u**" roles="ADMIN STUDENT EMPLOYER"/>
+        <request path="/api/noti**" roles="ADMIN STUDENT EMPLOYER"/>
+
+        <request path="/api/manage**" roles="ADMIN"/>
+        <request path="/manage**" roles="ADMIN"/>
+    </rules>
+
+</security>
+

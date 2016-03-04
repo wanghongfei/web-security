@@ -15,36 +15,16 @@ public class ResponseUtils {
 	private ResponseUtils() {
 	}
 	
-	/**
-	 * Return error information and close OutputStream
-	 * @param resp
-	 * @throws IOException
-	 */
-	public static void responseBadRole(HttpServletResponse resp, RoleInfo rInfo) throws IOException {
-		OutputStream out = resp.getOutputStream();
-		
-		// redirect to error url
-		if (false == rInfo.getToUrl().isEmpty()) {
-			resp.sendRedirect(rInfo.getToUrl());
-			return;
-		}
-		
-		resp.setContentType("text/plain");
-		resp.setStatus(403);
-		
-		out.write("bad role".getBytes());
-		out.close();
-	}
 
 	public static void sendRedirect(HttpServletResponse resp, String loginUrl) throws IOException {
 		resp.sendRedirect(loginUrl);
 	}
 
-    public static void sendErrorMessage(HttpServletResponse resp) throws IOException {
+    public static void sendErrorMessage(HttpServletResponse resp, String msg, int code) throws IOException {
         Map<String, Object> map = new HashMap<>();
-        map.put("message", "PERMISSION_ERROR");
-        map.put("result", "false");
-        map.put("code", 13);
+        map.put("message", msg);
+        //map.put("result", "false");
+        map.put("code", code);
         map.put("data", "");
 
         JSONObject jsonObject = new JSONObject(map);

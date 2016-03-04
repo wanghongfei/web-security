@@ -1,5 +1,6 @@
 package cn.fh.security.utils;
 
+import cn.fh.security.exception.ConfigFileNotFoundException;
 import cn.fh.security.exception.InvalidXmlFileException;
 import cn.fh.security.model.Config;
 import cn.fh.security.model.RoleInfo;
@@ -30,9 +31,31 @@ public class XmlLoader {
      */
     public static Config loadXml(ServletContext ctx, String path) throws DocumentException {
         SAXReader xmlReader = new SAXReader();
-        Document doc = xmlReader.read(ctx.getResourceAsStream(path));
+
+        InputStream in = ctx.getResourceAsStream(path);
+        if (null == in) {
+            throw new ConfigFileNotFoundException(path + " doesn't exist");
+        }
+
+        Document doc = xmlReader.read(in);
 
         return doParse(doc);
+    }
+
+    /**
+     * 从classpath中读取xml配置文件
+     * @param classpath
+     * @return
+     */
+    public static Config loadXml(String classpath) throws DocumentException {
+        String path = classpath.substring(classpath.indexOf(':') + 1);
+
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        if (null == in) {
+            throw new ConfigFileNotFoundException(path + " doesn't exist");
+        }
+
+        return loadXml(in);
     }
 
     /**
@@ -61,6 +84,15 @@ public class XmlLoader {
             config.setLoginUrl(loginPage);
 
             log.info("login page = {}", loginPage);
+        }
+
+        // 读取auth-error-page节点
+        Element authNode = root.element("auth-error-page");
+        if (null != authNode) {
+            String authPage = authNode.getText();
+            config.setAuthErrorUrl(authPage);
+
+            log.info("authentication error page = {}", authPage);
         }
 
         // 读取拦截规则

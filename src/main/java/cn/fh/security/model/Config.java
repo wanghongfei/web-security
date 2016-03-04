@@ -7,13 +7,24 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
+ * 封装用户配置文件
  * Created by wanghongfei on 15-6-24.
  */
 public class Config {
     private static Logger logger = LoggerFactory.getLogger(Config.class);
 
+    /**
+     * 拦截规则
+     */
     private List<RoleInfo> interceptRule;
+    /**
+     * 登陆页面地址
+     */
     private String loginUrl;
+    /**
+     * 权限不足时redirect的地址
+     */
+    private String authErrorUrl;
 
 
 
@@ -50,6 +61,14 @@ public class Config {
 
     public String getLoginUrl() {
         return loginUrl;
+    }
+
+    public String getAuthErrorUrl() {
+        return authErrorUrl;
+    }
+
+    public void setAuthErrorUrl(String authErrorUrl) {
+        this.authErrorUrl = authErrorUrl;
     }
 
     public void setLoginUrl(String loginUrl) {

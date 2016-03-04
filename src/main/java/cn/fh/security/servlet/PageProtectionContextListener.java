@@ -82,12 +82,17 @@ public class PageProtectionContextListener implements ServletContextListener {
             logger.debug("载入页面security配置文件");
 		}
 
-		// 加载JSON配置文件
+		// 加载XML配置文件
 		try {
-			//Config config = JsonLoader.loadJson(event.getServletContext(), SECURITY_CONFIG_PATH);
-            Config config = XmlLoader.loadXml(event.getServletContext(), SECURITY_CONFIG_PATH);
+            Config config = null;
+
+            if (SECURITY_CONFIG_PATH.startsWith("classpath:")) {
+                config = XmlLoader.loadXml(SECURITY_CONFIG_PATH);
+            } else {
+                config = XmlLoader.loadXml(event.getServletContext(), SECURITY_CONFIG_PATH);
+            }
+
 			PageProtectionContextListener.rcm = config.buildManager();
-			PageProtectionContextListener.rcm.setLoginUrl(config.getLoginUrl());
 
 		} catch (JSONException e) {
 			e.printStackTrace();

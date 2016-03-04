@@ -1,29 +1,17 @@
 package cn.fh.security.servlet;
 
-import cn.fh.security.credential.AuthLogic;
 import cn.fh.security.credential.Credential;
-import cn.fh.security.credential.DefaultCredential;
-import cn.fh.security.model.Config;
 import cn.fh.security.model.RoleInfo;
-import cn.fh.security.utils.CredentialUtils;
 import cn.fh.security.utils.ResponseUtils;
 import cn.fh.security.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 该过滤器应该放在所有过虑器之前，第一个处理请求。
@@ -34,11 +22,11 @@ import java.util.Optional;
  * @author whf
  *
  */
-public class PageProtectionFilter implements Filter, ApplicationContextAware {
+public class PageProtectionFilter implements Filter {
 	public static Logger logger = LoggerFactory.getLogger(PageProtectionFilter.class);
 
-	private static ApplicationContext appContext;
-	private static AuthLogic authBean;
+	//private static ApplicationContext appContext;
+	//private static AuthLogic authBean;
 
 	@Override
 	public void destroy() {
@@ -100,7 +88,7 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
             // 如果是POST方法
             // 返回json
             if (req.getMethod().equals("POST") || req.getMethod().equals("PUT") || req.getMethod().equals("DELETE")) {
-                ResponseUtils.sendErrorMessage((HttpServletResponse)response);
+                ResponseUtils.sendErrorMessage((HttpServletResponse)response, "PERMISSION_ERROR", 13);
             } else {
                 // 是GET方法
                 // 重定向
@@ -112,9 +100,20 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 		// 检查role是否满足
 		if (false == checkRole(rInfo, req)) {
-			// response error information to client
-			ResponseUtils.responseBadRole((HttpServletResponse) response, rInfo);
-			
+            // 权限不足
+
+            // 如果是GET请求, redirect到指定页面
+            if (req.getMethod().equals("GET") || req.getMethod().equals("HEAD")) {
+                String targetAddr = PageProtectionContextListener.rcm.getAuthErrorUrl();
+                if (null == targetAddr) {
+                    targetAddr = PageProtectionContextListener.rcm.getLoginUrl();
+                }
+
+                ResponseUtils.sendRedirect((HttpServletResponse) response, targetAddr);
+            } else {
+                ResponseUtils.sendErrorMessage((HttpServletResponse)response, "PERMISSION_ERROR", 13);
+            }
+
 			return;
 		}
 		
@@ -131,10 +130,10 @@ public class PageProtectionFilter implements Filter, ApplicationContextAware {
 
 	}
 
-	@Override
+/*	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.appContext = applicationContext;
-	}
+	}*/
 
 
 	/**
