@@ -24,7 +24,8 @@ public class Config {
     /**
      * 权限不足时redirect的地址
      */
-    private String authErrorUrl;
+    private String authErrorRedirect;
+    private String authErrorForward;
 
 
 
@@ -63,12 +64,20 @@ public class Config {
         return loginUrl;
     }
 
-    public String getAuthErrorUrl() {
-        return authErrorUrl;
+    public String getAuthErrorRedirect() {
+        return authErrorRedirect;
     }
 
-    public void setAuthErrorUrl(String authErrorUrl) {
-        this.authErrorUrl = authErrorUrl;
+    public void setAuthErrorRedirect(String authErrorRedirect) {
+        this.authErrorRedirect = authErrorRedirect;
+    }
+
+    public String getAuthErrorForward() {
+        return authErrorForward;
+    }
+
+    public void setAuthErrorForward(String authErrorForward) {
+        this.authErrorForward = authErrorForward;
     }
 
     public void setLoginUrl(String loginUrl) {

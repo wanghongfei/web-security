@@ -13,8 +13,10 @@
 
 	<!-- 登陆页面地址 -->
 	<login-page>/login</login-page>
-	<!-- 访问权限不足时重定向的地址 -->
-	<auth-error-page>/error</auth-error-page>
+	<!-- GET请求访问权限不足时重定向的地址 -->
+	<auth-error-redirect>/error</auth-error-redirect>
+	<!-- POST请求访问权限不足时forward地址(可以渲染一个json页面) -->
+	<auth-error-forward>/json</auth-error-forward>
 
 	<!-- URL拦截规则定义 -->
 	<rules>

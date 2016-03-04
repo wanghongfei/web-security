@@ -5,7 +5,8 @@
     <!-- 未登陆时redirect到此地址 -->
     <login-page>/login</login-page>
     <!-- 已登陆但权限不足时redirect地址 -->
-    <auth-error-page>/error</auth-error-page>
+    <auth-error-redirect>/error</auth-error-redirect>
+    <auth-error-forward>/json</auth-error-forward>
 
     <rules>
         <request path="/user**" roles="ADMIN STUDENT EMPLOYER"/>

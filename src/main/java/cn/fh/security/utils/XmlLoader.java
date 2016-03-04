@@ -86,13 +86,22 @@ public class XmlLoader {
             log.info("login page = {}", loginPage);
         }
 
-        // 读取auth-error-page节点
-        Element authNode = root.element("auth-error-page");
+        // 读取auth-error-redirect
+        Element authNode = root.element("auth-error-redirect");
         if (null != authNode) {
             String authPage = authNode.getText();
-            config.setAuthErrorUrl(authPage);
+            config.setAuthErrorRedirect(authPage);
 
-            log.info("authentication error page = {}", authPage);
+            log.info("authentication redirect page = {}", authPage);
+        }
+
+        // 读取auth-error-forward
+        Element forwardNode = root.element("auth-error-forward");
+        if (null != forwardNode) {
+            String authPage = forwardNode.getText();
+            config.setAuthErrorForward(authPage);
+
+            log.info("authentication forward page = {}", authPage);
         }
 
         // 读取拦截规则

@@ -149,9 +149,6 @@ public class RequestConstrainManager {
         return config.getLoginUrl();
 	}
 
-    public String getAuthErrorUrl() {
-        return config.getAuthErrorUrl();
-    }
 
 	public Config getConfig() {
 		return config;

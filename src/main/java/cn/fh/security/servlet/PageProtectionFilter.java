@@ -82,16 +82,16 @@ public class PageProtectionFilter implements Filter {
 		// 访问该URL需要登陆
 		if (false == isLoggedIn) {
 			// 用户没有登陆
-			// 重定向到login页面
-            logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
 
             // 如果是POST方法
-            // 返回json
+            // 返回json(forward页面)
             if (req.getMethod().equals("POST") || req.getMethod().equals("PUT") || req.getMethod().equals("DELETE")) {
-                ResponseUtils.sendErrorMessage((HttpServletResponse)response, "PERMISSION_ERROR", 13);
+                //ResponseUtils.sendErrorMessage((HttpServletResponse)response, "PERMISSION_ERROR", 13);
+                ResponseUtils.sendForward(req ,(HttpServletResponse) response, PageProtectionContextListener.rcm.getConfig().getAuthErrorForward());
             } else {
                 // 是GET方法
                 // 重定向
+                logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
                 ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
             }
 
@@ -100,14 +100,16 @@ public class PageProtectionFilter implements Filter {
 
 		// 检查role是否满足
 		if (false == checkRole(rInfo, req)) {
-            // 权限不足
-            // redirect到指定页面
-            String targetAddr = PageProtectionContextListener.rcm.getAuthErrorUrl();
-            if (null == targetAddr) {
-                targetAddr = PageProtectionContextListener.rcm.getLoginUrl();
+            // 如果是POST方法
+            // 返回json(forward页面)
+            if (req.getMethod().equals("POST") || req.getMethod().equals("PUT") || req.getMethod().equals("DELETE")) {
+                ResponseUtils.sendForward(req ,(HttpServletResponse) response, PageProtectionContextListener.rcm.getConfig().getAuthErrorForward());
+            } else {
+                // 是GET方法
+                // 重定向
+                logger.debug("重定向至:{}", PageProtectionContextListener.rcm.getLoginUrl());
+                ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getConfig().getAuthErrorRedirect());
             }
-
-            ResponseUtils.sendRedirect((HttpServletResponse) response, targetAddr);
 
 			return;
 		}
