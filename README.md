@@ -1,8 +1,10 @@
 # web-security - 致力于打造一个配置极简的JavaWeb安全框架
 
 ## 特点
-- 剔除花哨用不到的功能, 只有基于URL的权限验证
+- 剔除花哨用不到的功能, 只有基于URL的role权限验证
 - 支持`*`, `**`通配符
+- (Developing) 内置 Session Cluster 支持, 默认将session保存至Redis, 可以实现自己的`SessionDAO`修改Session存储方式
+
 
 ## 配置
 拦截定义文件`WEB-INF/security-config.xml`:
@@ -40,6 +42,12 @@
 <context-param>
         <param-name>STATIC_RESOURCE_PATH</param-name>
         <param-value>/assets:/resources:/js:/img:/css</param-value>
+</context-param>
+
+<!-- 启用session集群功能 -->
+<context-param>
+        <param-name>SESSION_CLUSTER</param-name>
+        <param-value>true</param-value>
 </context-param>
 ```
 
