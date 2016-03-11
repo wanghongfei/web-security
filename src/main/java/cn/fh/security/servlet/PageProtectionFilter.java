@@ -42,6 +42,7 @@ public class PageProtectionFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest req = (HttpServletRequest) request;
+        SecurityServletRequestWrapper reqWrapper = new SecurityServletRequestWrapper(req);
 
 		// remove context name from URI
 		String url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
@@ -51,12 +52,12 @@ public class PageProtectionFilter implements Filter {
 
         // 检查是否是静态资源
         if (true == isStaticResource(url)) {
-            chain.doFilter(request, response);
+            chain.doFilter(reqWrapper, response);
             return;
         }
 
         if (req.getMethod().equals("OPTIONS")) {
-            chain.doFilter(request, response);
+            chain.doFilter(reqWrapper, response);
             return;
         }
 
@@ -75,7 +76,7 @@ public class PageProtectionFilter implements Filter {
             logger.debug("不需要登陆");
 
             // 放行
-			chain.doFilter(request, response);
+			chain.doFilter(reqWrapper, response);
 			return;
 		}
 
@@ -116,7 +117,7 @@ public class PageProtectionFilter implements Filter {
 		
 		
 		
-		chain.doFilter(request, response);
+		chain.doFilter(reqWrapper, response);
 
 
 	}
@@ -187,5 +188,4 @@ public class PageProtectionFilter implements Filter {
 
         return false;
     }
-	
 }
