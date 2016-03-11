@@ -58,6 +58,10 @@ public class PageProtectionContextListener implements ServletContextListener {
      * 是否启用session集群
      */
     public static final String INIT_PARM_ENABLE_SESSION_CLUSTER = "SESSION_CLUSTER";
+    /**
+     * SessionDAO的实现类
+     */
+    public static final String INIT_PARM_REDIS_SESSION_DAO = "REDIS_SESSION_DAO";
 
     /**
      * The path of configuration file
@@ -65,6 +69,7 @@ public class PageProtectionContextListener implements ServletContextListener {
     public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-config.xml";
     public static String[] STATIC_RESOURCE_PATHS = { "/resources" };
     public static boolean SESSION_CLUSTER = false;
+    public static final String REDIS_SESSION_DAO = "cn.fh.security.servlet.session.RedisSessionDAO";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {

@@ -26,7 +26,7 @@ public class PageProtectionFilter implements Filter {
 
     private static List<SecurityFilter> filters = new ArrayList<>(5);
 
-    private static SessionDAO sessionDAO = new RedisSessionDAO();
+    private SessionDAO sessionDAO = new RedisSessionDAO();
 
     static {
         filters.add(new RoleSecurityFilter());
