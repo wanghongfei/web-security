@@ -78,3 +78,7 @@ Spring Boot下的配置方法:
         return new PageProtectionContextListener();
     }
 ```
+
+## 自定义SessionDAO
+`sessionDAO`是`PageProtectionFilter`的成员变量，框架通过该接口实现session存储，默认为空实现。
+用户实现自定义`SessionDAO`时, 通过Spring将自己的实现注入到该成员变量中即可。
