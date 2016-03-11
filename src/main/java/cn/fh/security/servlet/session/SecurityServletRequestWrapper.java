@@ -1,4 +1,4 @@
-package cn.fh.security.servlet;
+package cn.fh.security.servlet.session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +15,12 @@ public class SecurityServletRequestWrapper extends HttpServletRequestWrapper {
 
     private HttpSession session;
 
-    public SecurityServletRequestWrapper(HttpServletRequest request) {
+    public SecurityServletRequestWrapper(HttpServletRequest request, HttpSession session) {
         super(request);
+
+        if (null != session) {
+            this.session = session;
+        }
     }
 
     @Override

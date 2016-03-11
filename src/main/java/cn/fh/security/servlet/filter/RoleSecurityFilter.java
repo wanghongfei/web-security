@@ -3,7 +3,7 @@ package cn.fh.security.servlet.filter;
 import cn.fh.security.credential.Credential;
 import cn.fh.security.model.RoleInfo;
 import cn.fh.security.servlet.PageProtectionContextListener;
-import cn.fh.security.servlet.SecurityServletRequestWrapper;
+import cn.fh.security.servlet.session.SecurityServletRequestWrapper;
 import cn.fh.security.utils.ResponseUtils;
 import cn.fh.security.utils.StringUtils;
 import org.slf4j.Logger;
@@ -32,7 +32,6 @@ public class RoleSecurityFilter implements SecurityFilter {
             throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
-        SecurityServletRequestWrapper reqWrapper = new SecurityServletRequestWrapper(req);
 
         // remove context name from URI
         String url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());

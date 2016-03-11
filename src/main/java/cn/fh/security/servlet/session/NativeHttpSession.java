@@ -1,4 +1,4 @@
-package cn.fh.security.servlet;
+package cn.fh.security.servlet.session;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -20,10 +20,16 @@ public class NativeHttpSession implements HttpSession {
 
     private Map<String, Object> parameterMap;
 
+    /**
+     * 标记数据是否发生变化
+     */
+    private boolean dirty = false;
+
     public NativeHttpSession(ServletContext ctx) {
         this.ctx = ctx;
 
         parameterMap = new HashMap<>();
+        dirty = true;
     }
 
 
@@ -105,6 +111,7 @@ public class NativeHttpSession implements HttpSession {
 
     @Override
     public void setAttribute(String key, Object val) {
+        dirty = true;
         parameterMap.put(key, val);
     }
 
@@ -119,6 +126,7 @@ public class NativeHttpSession implements HttpSession {
 
     @Override
     public void removeAttribute(String s) {
+        dirty = true;
         parameterMap.remove(s);
     }
 
@@ -139,6 +147,14 @@ public class NativeHttpSession implements HttpSession {
     @Override
     public boolean isNew() {
         return false;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
     /**

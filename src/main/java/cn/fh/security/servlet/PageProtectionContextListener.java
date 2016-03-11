@@ -54,12 +54,17 @@ public class PageProtectionContextListener implements ServletContextListener {
      */
 	public static final String INIT_PARM_STATIC_RESOURCE_PATH = "STATIC_RESOURCE_PATH";
     public static final String INIT_PARM_SECURITY_CONFIG_PATH = "SECURITY_CONFIG_PATH";
+    /**
+     * 是否启用session集群
+     */
+    public static final String INIT_PARM_ENABLE_SESSION_CLUSTER = "SESSION_CLUSTER";
 
     /**
      * The path of configuration file
      */
     public static String SECURITY_CONFIG_PATH = "/WEB-INF/security-config.xml";
     public static String[] STATIC_RESOURCE_PATHS = { "/resources" };
+    public static boolean SESSION_CLUSTER = false;
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -78,6 +83,8 @@ public class PageProtectionContextListener implements ServletContextListener {
 			for (String path : STATIC_RESOURCE_PATHS) {
 				logger.debug("静态资源目录:{}", path);
 			}
+
+            logger.debug("session集群: {}", SESSION_CLUSTER);
             logger.debug("security配置文件:{}", SECURITY_CONFIG_PATH);
             logger.debug("载入页面security配置文件");
 		}
@@ -124,6 +131,12 @@ public class PageProtectionContextListener implements ServletContextListener {
         String configPath = ctx.getInitParameter(INIT_PARM_SECURITY_CONFIG_PATH);
         if (null != configPath) {
             SECURITY_CONFIG_PATH = configPath;
+        }
+
+        // 读取是否启用session cluster
+        String cluster = ctx.getInitParameter(INIT_PARM_ENABLE_SESSION_CLUSTER);
+        if (null != cluster && cluster.equalsIgnoreCase("true")) {
+            SESSION_CLUSTER = true;
         }
     }
 	
