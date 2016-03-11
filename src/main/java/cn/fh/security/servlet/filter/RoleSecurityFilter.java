@@ -1,13 +1,15 @@
-package cn.fh.security.servlet;
+package cn.fh.security.servlet.filter;
 
 import cn.fh.security.credential.Credential;
 import cn.fh.security.model.RoleInfo;
+import cn.fh.security.servlet.PageProtectionContextListener;
+import cn.fh.security.servlet.SecurityServletRequestWrapper;
 import cn.fh.security.utils.ResponseUtils;
 import cn.fh.security.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,67 +24,52 @@ import java.util.List;
  * @author whf
  *
  */
-public class PageProtectionFilter implements Filter {
-	public static Logger logger = LoggerFactory.getLogger(PageProtectionFilter.class);
+public class RoleSecurityFilter implements SecurityFilter {
+    private static Logger logger = LoggerFactory.getLogger(RoleSecurityFilter.class);
 
-	//private static ApplicationContext appContext;
-	//private static AuthLogic authBean;
+    @Override
+    public boolean doFilter(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
 
-	@Override
-	public void destroy() {
-
-	}
-
-	/**
-	 * check every request and determine whether the client has enough roles to 
-	 * let server process its request.
-	 */
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		
-		HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletRequest req = (HttpServletRequest) request;
         SecurityServletRequestWrapper reqWrapper = new SecurityServletRequestWrapper(req);
 
-		// remove context name from URI
-		String url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
+        // remove context name from URI
+        String url = StringUtils.trimContextFromUrl(req.getContextPath(), req.getRequestURI());
 
 
         logger.debug("请求uri:{}", url);
 
         // 检查是否是静态资源
         if (true == isStaticResource(url)) {
-            chain.doFilter(reqWrapper, response);
-            return;
+            return true;
         }
 
         if (req.getMethod().equals("OPTIONS")) {
-            chain.doFilter(reqWrapper, response);
-            return;
+            return true;
         }
 
 
-		// 判断是否已经登陆
-		boolean isLoggedIn = isLoggedIn(req);
+        // 判断是否已经登陆
+        boolean isLoggedIn = isLoggedIn(req);
         logger.debug("credential = {} ", isLoggedIn);
 
 
 
         // 查询该url对应的role
-		RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
+        RoleInfo rInfo = PageProtectionContextListener.rcm.get(url);
         // rInfo为空说明
-		// 访问该URL不需要登陆(权限)
-		if (null == rInfo) {
+        // 访问该URL不需要登陆(权限)
+        if (null == rInfo) {
             logger.debug("不需要登陆");
 
             // 放行
-			chain.doFilter(reqWrapper, response);
-			return;
-		}
+            return true;
+        }
 
-		// 访问该URL需要登陆
-		if (false == isLoggedIn) {
-			// 用户没有登陆
+        // 访问该URL需要登陆
+        if (false == isLoggedIn) {
+            // 用户没有登陆
 
             // 如果是POST方法
             // 返回json(forward页面)
@@ -96,11 +83,11 @@ public class PageProtectionFilter implements Filter {
                 ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getLoginUrl());
             }
 
-			return;
-		}
+            return false;
+        }
 
-		// 检查role是否满足
-		if (false == checkRole(rInfo, req)) {
+        // 检查role是否满足
+        if (false == checkRole(rInfo, req)) {
             // 如果是POST方法
             // 返回json(forward页面)
             if (req.getMethod().equals("POST") || req.getMethod().equals("PUT") || req.getMethod().equals("DELETE")) {
@@ -112,72 +99,58 @@ public class PageProtectionFilter implements Filter {
                 ResponseUtils.sendRedirect((HttpServletResponse) response, PageProtectionContextListener.rcm.getConfig().getAuthErrorRedirect());
             }
 
-			return;
-		}
-		
-		
-		
-		chain.doFilter(reqWrapper, response);
+            return false;
+        }
 
 
-	}
 
-	@Override
-	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
+        return true;
+    }
 
-	}
+    /**
+     * 检查用户是否登陆
+     * @param req
+     * @return
+     */
+    private boolean isLoggedIn(HttpServletRequest req) {
+        // 检查request中是否有Credential对象
+        Credential credential = (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
+        // client has not logged in, return false
+        if (null == credential) {
+            return false;
+        }
 
-/*	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.appContext = applicationContext;
-	}*/
+        return true;
+    }
 
-
-	/**
-	 * 检查用户是否登陆
-	 * @param req
-	 * @return
-	 */
-	private boolean isLoggedIn(HttpServletRequest req) {
-		// 检查request中是否有Credential对象
-		Credential credential = (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
-		// client has not logged in, return false
-		if (null == credential) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * check whether the client has enough roles.
-	 * if client does not have session and this URL needs roles, return false
-	 * 
-	 * @param req
-	 * @return
-	 */
-	private boolean checkRole(RoleInfo rInfo, HttpServletRequest req) {
+    /**
+     * check whether the client has enough roles.
+     * if client does not have session and this URL needs roles, return false
+     *
+     * @param req
+     * @return
+     */
+    private boolean checkRole(RoleInfo rInfo, HttpServletRequest req) {
         if (null == rInfo) {
             return true;
         }
 
-		List<String> roleList = rInfo.getRoleList();
+        List<String> roleList = rInfo.getRoleList();
 
-		// 返回null说明用户虽然配置了uri安全规则
-		// 但没有为该uri指定任何角色.
-		// 这种情况默认为任何已登陆使用都可以访问
-		if (null == roleList) {
-			return true;
-		}
+        // 返回null说明用户虽然配置了uri安全规则
+        // 但没有为该uri指定任何角色.
+        // 这种情况默认为任何已登陆使用都可以访问
+        if (null == roleList) {
+            return true;
+        }
 
 
-		// 查检credential中的用户是否具有指定的角色
-		//Credential credential = CredentialUtils.getCredential(req.getSession());
+        // 查检credential中的用户是否具有指定的角色
+        //Credential credential = CredentialUtils.getCredential(req.getSession());
         Credential credential = (Credential) req.getAttribute(Credential.CREDENTIAL_CONTEXT_ATTRIBUTE);
-		return roleList.stream()
-				.anyMatch( (roleName) -> credential.hasRole(roleName) );
-	}
+        return roleList.stream()
+                .anyMatch( (roleName) -> credential.hasRole(roleName) );
+    }
 
     private boolean isStaticResource(String url) {
         for (String path : PageProtectionContextListener.STATIC_RESOURCE_PATHS) {
